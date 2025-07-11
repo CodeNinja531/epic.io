@@ -3,19 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Epic: The Musical</title> <style>
+    <title>Epic: The Musical</title>
+    <style>
         body {
             font-family: Arial, sans-serif;
             line-height: 1.6;
             margin: 0;
             background-color: #f4f4f4;
             color: #333;
-            display: flex;
-            /* Default for larger screens */
-            transition: margin-left 0.3s ease; /* Smooth transition for content when sidebar moves */
-        }
-        body.sidebar-collapsed {
-            margin-left: 0;
+            /* Removed display: flex and margin-left related to sidebar push */
+            overflow-x: hidden; /* Prevent horizontal scrollbar if sidebar overflows briefly */
         }
 
         /* --- Sidebar Navigation --- */
@@ -26,20 +23,18 @@
             padding: 20px 0;
             box-shadow: 2px 0 5px rgba(0,0,0,0.2);
             overflow-y: auto;
-            flex-shrink: 0;
-            position: fixed; /* Fixed position for both large and small screens */
+            position: fixed; /* Always fixed to overlay content */
             top: 0;
             left: 0;
             height: 100vh;
-            transform: translateX(0); /* Start visible for larger screens */
+            transform: translateX(-100%); /* Start hidden (off-screen to the left) */
             transition: transform 0.3s ease; /* Smooth slide-in/out */
             z-index: 1000; /* Ensure it's above other content */
         }
-        /* State when sidebar is collapsed (default for mobile, or after toggle) */
-        #sidebar-nav.collapsed {
-            transform: translateX(-100%); /* Slide out completely */
+        /* When sidebar is NOT collapsed, slide it in */
+        #sidebar-nav:not(.collapsed) {
+            transform: translateX(0);
         }
-
 
         #sidebar-nav h2 {
             text-align: center;
@@ -115,10 +110,10 @@
 
         /* --- Menu Toggle Button --- */
         #menu-toggle {
-            position: fixed;
+            position: fixed; /* Always fixed */
             top: 15px;
-            left: 15px;
-            z-index: 1001; /* Above sidebar when collapsed */
+            left: 15px; /* Always on the far left */
+            z-index: 1001; /* Above sidebar */
             background-color: #007bff;
             color: white;
             border: none;
@@ -128,56 +123,37 @@
             font-size: 1.5em;
             line-height: 1;
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            transition: left 0.3s ease, background-color 0.2s;
+            transition: background-color 0.2s; /* Only background transition */
         }
-        /* When sidebar is NOT collapsed, move button to the right for larger screens */
-        body:not(.sidebar-collapsed) #menu-toggle {
-             left: 265px; /* (sidebar width + some padding) */
+        #menu-toggle:hover {
+            background-color: #0056b3;
         }
 
         /* --- Main Content Area --- */
         .main-content {
-            flex-grow: 1;
+            flex-grow: 1; /* Allows it to take up available space */
             padding: 20px;
-            /* Default margin for larger screens */
-            margin-left: 250px;
-            transition: margin-left 0.3s ease;
-        }
-        /* When sidebar is collapsed, remove margin for larger screens */
-        body.sidebar-collapsed .main-content {
-            margin-left: 0;
+            margin-left: 0; /* No margin-left, content does not shift */
+            width: 100%; /* Ensure it occupies full width */
+            box-sizing: border-box; /* Include padding in width */
         }
 
-        /* --- Media Queries for Mobile/Smaller Screens --- */
-        @media (max-width: 768px) {
-            body {
-                display: block; /* Remove flexbox for simpler layout on small screens */
-                margin-left: 0 !important; /* Override any lingering margin */
-            }
-
-            #sidebar-nav {
-                width: 80%; /* Make sidebar take up more width on mobile */
-                max-width: 300px; /* Cap its max width */
-                box-shadow: 2px 0 10px rgba(0,0,0,0.4);
-            }
-            #sidebar-nav.collapsed {
-                transform: translateX(-100%); /* Always slide out completely */
-            }
-
-            .main-content {
-                margin-left: 0; /* No margin-left on mobile */
-                width: 100%; /* Take full width */
-            }
-
-            #menu-toggle {
-                left: 15px; /* Keep button on the far left */
-                transition: none; /* No transition for button position on mobile */
-            }
-            /* Hide the main content's horizontal scrollbar if sidebar is open and content is shifted */
-            body:not(.sidebar-collapsed) {
-                 /* This helps prevent horizontal scrollbar on mobile when sidebar is open */
-                 overflow-x: hidden;
-            }
+        /* Overlay to dim content when menu is open */
+        #overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+            z-index: 999; /* Below sidebar, above content */
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        #overlay.active {
+            opacity: 1;
+            visibility: visible;
         }
 
 
@@ -259,13 +235,13 @@
 <body>
     <button id="menu-toggle">☰</button>
 
-    <nav id="sidebar-nav">
+    <nav id="sidebar-nav" class="collapsed">
         <h2>Musical Index</h2>
         <ul id="nav-list">
             </ul>
     </nav>
 
-    <div class="main-content">
+    <div id="overlay"></div> <div class="main-content">
         <div class="container">
             <h1></h1> <div id="loading-message">Loading lyrics...</div>
             <div id="music-container">
@@ -281,21 +257,21 @@
             const navList = document.getElementById('nav-list');
             const menuToggle = document.getElementById('menu-toggle');
             const sidebarNav = document.getElementById('sidebar-nav');
-            const body = document.body;
+            const overlay = document.getElementById('overlay'); // Get the new overlay element
 
             const filePath = 'epic.txt';
 
             // --- Menu Toggle Logic ---
-            menuToggle.addEventListener('click', () => {
+            const toggleMenu = () => {
                 sidebarNav.classList.toggle('collapsed');
-                body.classList.toggle('sidebar-collapsed'); // This class controls main content margin on large screens
-            });
+                overlay.classList.toggle('active'); // Toggle overlay visibility
+            };
 
-            // Initial state: collapse sidebar on load for a cleaner first view
-            // This ensures it starts hidden, especially on mobile.
-            sidebarNav.classList.add('collapsed');
-            body.classList.add('sidebar-collapsed');
+            menuToggle.addEventListener('click', toggleMenu);
+            overlay.addEventListener('click', toggleMenu); // Close menu when clicking outside (on overlay)
 
+            // Initial state: sidebar starts collapsed (already set in HTML class)
+            // No need for body.sidebar-collapsed as content doesn't shift
 
             // Function to parse the plain text file
             function parseMusicalFile(text) {
@@ -360,22 +336,16 @@
 
             // Helper to get a sanitized name for image lookup (based on your "second word" rule)
             function getSanitizedSagaName(sagaName) {
-                // Assuming saga names are in the format "The [Second Word] Saga"
-                // e.g., "The Troy Saga" -> "Troy.jpg"
-                // e.g., "The Cyclops Saga" -> "Cyclops.jpg"
                 const words = sagaName.split(' ');
                 if (words.length >= 3) {
-                    return words[1]; // Returns the second word (index 1)
+                    return words[1]; // Returns the second word (index 1) for "The X Saga"
                 }
-                // Fallback for names that don't fit the "The X Saga" pattern (e.g., if you have "Circe Saga" or "Odyssey").
-                // This assumes if it's two words and ends in "Saga", the first word is the key.
-                // Or if it's just one word, that word is the key.
+                // Fallback for names that don't fit the "The X Saga" pattern.
                 if (words.length >= 2 && words[words.length - 1].toLowerCase() === 'saga') {
                     return words[0]; // If "Circe Saga", returns "Circe"
                 }
                 return sagaName; // Returns original name if no specific pattern matches
             }
-
 
             // Function to display the parsed data on the webpage and build navigation
             function displayMusic(musicalData) {
@@ -437,13 +407,12 @@
                     // Add click listener to toggle song list and scroll
                     navSagaLink.addEventListener('click', (e) => {
                         e.preventDefault();
-                        const targetId = e.target.closest('a').getAttribute('href').substring(1); // Use closest('a') to handle clicks on img/span
+                        const targetId = e.target.closest('a').getAttribute('href').substring(1);
                         document.getElementById(targetId).scrollIntoView({ behavior: 'smooth' });
 
-                        // Toggle expand/collapse state for this saga's songs
                         navSagaLi.classList.toggle('expanded');
 
-                        // Optional: Collapse other sagas when one is expanded
+                        // Collapse other sagas when one is expanded
                         document.querySelectorAll('.nav-saga-item').forEach(item => {
                             if (item !== navSagaLi) {
                                 item.classList.remove('expanded');
@@ -479,15 +448,14 @@
                         navSongLi.appendChild(navSongLink);
                         navSongUl.appendChild(navSongLi);
 
-                        // Add click listener to scroll to song
+                        // Add click listener to scroll to song and close menu
                         navSongLink.addEventListener('click', (e) => {
                             e.preventDefault();
                             const targetId = e.target.getAttribute('href').substring(1);
                             document.getElementById(targetId).scrollIntoView({ behavior: 'smooth' });
                             
-                            // Collapse sidebar after clicking a song link
-                            sidebarNav.classList.add('collapsed');
-                            body.classList.add('sidebar-collapsed');
+                            // Collapse sidebar and hide overlay after clicking a song link
+                            toggleMenu(); // Use the common toggle function
                         });
                     });
 
@@ -499,7 +467,7 @@
                 window.addEventListener('scroll', () => {
                     const sagas = document.querySelectorAll('.saga');
                     const songs = document.querySelectorAll('.song');
-                    const navSagaLinks = document.querySelectorAll('.nav-saga-item > a'); // Direct children 'a'
+                    const navSagaLinks = document.querySelectorAll('.nav-saga-item > a');
                     const navSongLinks = document.querySelectorAll('.nav-song-item a');
 
                     let activeSectionId = '';
@@ -507,12 +475,9 @@
 
                     // Prioritize song highlighting
                     let foundActiveSong = false;
-                    // Iterate backwards to prioritize elements higher on screen when multiple are in view
                     for (let i = songs.length - 1; i >= 0; i--) {
                         const song = songs[i];
                         const rect = song.getBoundingClientRect();
-                        // Song is considered active if its top is visible and within a reasonable range from the top
-                        // We use window.innerHeight / 3 as a reference point for "in view" to keep it near the top
                         if (rect.top <= window.innerHeight / 3 && rect.bottom > window.innerHeight / 3) {
                             activeSongId = song.id;
                             foundActiveSong = true;
@@ -521,7 +486,6 @@
                     }
 
                     if (!foundActiveSong) {
-                         // Iterate backwards for sagas if no song is clearly active
                          for (let i = sagas.length - 1; i >= 0; i--) {
                             const saga = sagas[i];
                             const rect = saga.getBoundingClientRect();
@@ -532,25 +496,19 @@
                         }
                     }
 
-
-                    // Remove active/expanded from all nav items initially
                     navSagaLinks.forEach(link => link.classList.remove('active'));
                     navSongLinks.forEach(link => link.classList.remove('active'));
-                    document.querySelectorAll('.nav-saga-item').forEach(item => {
-                        // We won't remove 'expanded' for all here, as we manage it below specifically
-                    });
 
-                    // Apply active class to the visible saga/song and manage expanded state
                     if (activeSongId) {
                         const activeLink = document.querySelector(`.nav-song-item a[href="#${activeSongId}"]`);
                         if (activeLink) {
                             activeLink.classList.add('active');
                             const parentSagaLi = activeLink.closest('.nav-saga-item');
                             if (parentSagaLi) {
-                                parentSagaLi.classList.add('expanded'); // Ensure parent saga is expanded
+                                parentSagaLi.classList.add('expanded');
                                 const parentSagaLink = parentSagaLi.querySelector('.nav-saga-item > a');
                                 if (parentSagaLink) {
-                                    parentSagaLink.classList.add('active'); // Activate parent saga link
+                                    parentSagaLink.classList.add('active');
                                 }
                             }
                         }
@@ -560,17 +518,15 @@
                             activeLink.classList.add('active');
                             const parentSagaLi = activeLink.closest('.nav-saga-item');
                             if (parentSagaLi) {
-                                parentSagaLi.classList.add('expanded'); // Ensure saga is expanded
+                                parentSagaLi.classList.add('expanded');
                             }
                         }
                     }
 
-                    // After setting active, collapse any non-active sagas that are not ancestors of an active song
+                    // Collapse any non-active sagas
                     document.querySelectorAll('.nav-saga-item').forEach(item => {
                         const sagaLink = item.querySelector('.nav-saga-item > a');
-                        // Check if this saga or any of its children are currently active
                         const isActiveOrAncestor = sagaLink.classList.contains('active') || item.querySelector('.nav-song-item a.active');
-
                         if (!isActiveOrAncestor) {
                             item.classList.remove('expanded');
                         }
