@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Musical Lyrics Viewer</title>
-    <style>
+    <title>Epic: The Musical</title> <style>
         body {
             font-family: Arial, sans-serif;
             line-height: 1.6;
@@ -12,6 +11,7 @@
             background-color: #f4f4f4;
             color: #333;
             display: flex;
+            /* Default for larger screens */
             transition: margin-left 0.3s ease; /* Smooth transition for content when sidebar moves */
         }
         body.sidebar-collapsed {
@@ -27,17 +27,19 @@
             box-shadow: 2px 0 5px rgba(0,0,0,0.2);
             overflow-y: auto;
             flex-shrink: 0;
-            position: fixed; /* Fixed position */
+            position: fixed; /* Fixed position for both large and small screens */
             top: 0;
             left: 0;
             height: 100vh;
-            transform: translateX(0); /* Start visible */
+            transform: translateX(0); /* Start visible for larger screens */
             transition: transform 0.3s ease; /* Smooth slide-in/out */
             z-index: 1000; /* Ensure it's above other content */
         }
+        /* State when sidebar is collapsed (default for mobile, or after toggle) */
         #sidebar-nav.collapsed {
-            transform: translateX(-100%); /* Slide out */
+            transform: translateX(-100%); /* Slide out completely */
         }
+
 
         #sidebar-nav h2 {
             text-align: center;
@@ -90,7 +92,7 @@
             transition: max-height 0.3s ease-out;
         }
         .nav-saga-item.expanded .nav-song-list {
-            max-height: 500px;
+            max-height: 500px; /* Sufficiently large */
         }
         .nav-song-item a {
             display: block;
@@ -128,24 +130,58 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
             transition: left 0.3s ease, background-color 0.2s;
         }
-        #menu-toggle:hover {
-            background-color: #0056b3;
-        }
+        /* When sidebar is NOT collapsed, move button to the right for larger screens */
         body:not(.sidebar-collapsed) #menu-toggle {
-             left: 265px; /* Move button right when sidebar is open (sidebar width + some padding) */
+             left: 265px; /* (sidebar width + some padding) */
         }
 
         /* --- Main Content Area --- */
         .main-content {
             flex-grow: 1;
             padding: 20px;
-            margin-left: 250px; /* Initial margin for sidebar */
-            transition: margin-left 0.3s ease; /* Smooth transition */
+            /* Default margin for larger screens */
+            margin-left: 250px;
+            transition: margin-left 0.3s ease;
         }
+        /* When sidebar is collapsed, remove margin for larger screens */
         body.sidebar-collapsed .main-content {
-            margin-left: 0; /* No margin when sidebar collapsed */
+            margin-left: 0;
         }
 
+        /* --- Media Queries for Mobile/Smaller Screens --- */
+        @media (max-width: 768px) {
+            body {
+                display: block; /* Remove flexbox for simpler layout on small screens */
+                margin-left: 0 !important; /* Override any lingering margin */
+            }
+
+            #sidebar-nav {
+                width: 80%; /* Make sidebar take up more width on mobile */
+                max-width: 300px; /* Cap its max width */
+                box-shadow: 2px 0 10px rgba(0,0,0,0.4);
+            }
+            #sidebar-nav.collapsed {
+                transform: translateX(-100%); /* Always slide out completely */
+            }
+
+            .main-content {
+                margin-left: 0; /* No margin-left on mobile */
+                width: 100%; /* Take full width */
+            }
+
+            #menu-toggle {
+                left: 15px; /* Keep button on the far left */
+                transition: none; /* No transition for button position on mobile */
+            }
+            /* Hide the main content's horizontal scrollbar if sidebar is open and content is shifted */
+            body:not(.sidebar-collapsed) {
+                 /* This helps prevent horizontal scrollbar on mobile when sidebar is open */
+                 overflow-x: hidden;
+            }
+        }
+
+
+        /* Remaining styles are unchanged */
         .container {
             max-width: 900px;
             margin: auto;
@@ -167,8 +203,8 @@
             margin-bottom: 30px;
             padding: 20px;
             background-color: #f7f3fd;
-            display: flex; /* For aligning icon and name */
-            flex-direction: column; /* Stack icon/name and songs */
+            display: flex;
+            flex-direction: column;
         }
         .saga-header {
             display: flex;
@@ -177,7 +213,7 @@
             border-bottom: 2px solid #e0d1f7;
             padding-bottom: 10px;
         }
-        .saga-header img { /* Style for icons in main content */
+        .saga-header img {
             width: 50px;
             height: 50px;
             margin-right: 15px;
@@ -189,7 +225,7 @@
             font-size: 2em;
             color: #6a0dad;
             font-weight: bold;
-            margin: 0; /* Remove default h2 margin */
+            margin: 0;
         }
         .song {
             margin-bottom: 20px;
@@ -252,10 +288,11 @@
             // --- Menu Toggle Logic ---
             menuToggle.addEventListener('click', () => {
                 sidebarNav.classList.toggle('collapsed');
-                body.classList.toggle('sidebar-collapsed');
+                body.classList.toggle('sidebar-collapsed'); // This class controls main content margin on large screens
             });
 
             // Initial state: collapse sidebar on load for a cleaner first view
+            // This ensures it starts hidden, especially on mobile.
             sidebarNav.classList.add('collapsed');
             body.classList.add('sidebar-collapsed');
 
@@ -321,7 +358,7 @@
                 return musical;
             }
 
-            // Helper to get a sanitized name for image lookup
+            // Helper to get a sanitized name for image lookup (based on your "second word" rule)
             function getSanitizedSagaName(sagaName) {
                 // Assuming saga names are in the format "The [Second Word] Saga"
                 // e.g., "The Troy Saga" -> "Troy.jpg"
@@ -330,14 +367,13 @@
                 if (words.length >= 3) {
                     return words[1]; // Returns the second word (index 1)
                 }
-                // Fallback for names that don't fit the "The X Saga" pattern.
-                // For example, if a saga was just "Circe", this would return "Circe".
-                // If it's "Circe Saga", it would return "Circe".
-                // Adjust this fallback if your non-standard saga names require a different logic.
+                // Fallback for names that don't fit the "The X Saga" pattern (e.g., if you have "Circe Saga" or "Odyssey").
+                // This assumes if it's two words and ends in "Saga", the first word is the key.
+                // Or if it's just one word, that word is the key.
                 if (words.length >= 2 && words[words.length - 1].toLowerCase() === 'saga') {
                     return words[0]; // If "Circe Saga", returns "Circe"
                 }
-                return sagaName; // Returns original name if no pattern matches (e.g., "SomethingElse")
+                return sagaName; // Returns original name if no specific pattern matches
             }
 
 
@@ -476,7 +512,7 @@
                         const song = songs[i];
                         const rect = song.getBoundingClientRect();
                         // Song is considered active if its top is visible and within a reasonable range from the top
-                        // or if it spans across the middle of the viewport.
+                        // We use window.innerHeight / 3 as a reference point for "in view" to keep it near the top
                         if (rect.top <= window.innerHeight / 3 && rect.bottom > window.innerHeight / 3) {
                             activeSongId = song.id;
                             foundActiveSong = true;
@@ -501,8 +537,7 @@
                     navSagaLinks.forEach(link => link.classList.remove('active'));
                     navSongLinks.forEach(link => link.classList.remove('active'));
                     document.querySelectorAll('.nav-saga-item').forEach(item => {
-                        // Only collapse if it's not the parent of an active song
-                        // This logic is slightly adjusted to manage expanded state more precisely
+                        // We won't remove 'expanded' for all here, as we manage it below specifically
                     });
 
                     // Apply active class to the visible saga/song and manage expanded state
@@ -530,10 +565,13 @@
                         }
                     }
 
-                    // After setting active, collapse any non-active sagas
+                    // After setting active, collapse any non-active sagas that are not ancestors of an active song
                     document.querySelectorAll('.nav-saga-item').forEach(item => {
                         const sagaLink = item.querySelector('.nav-saga-item > a');
-                        if (!sagaLink || !sagaLink.classList.contains('active')) {
+                        // Check if this saga or any of its children are currently active
+                        const isActiveOrAncestor = sagaLink.classList.contains('active') || item.querySelector('.nav-song-item a.active');
+
+                        if (!isActiveOrAncestor) {
                             item.classList.remove('expanded');
                         }
                     });
