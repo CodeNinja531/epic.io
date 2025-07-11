@@ -3,31 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Epic: The Musical</title>
+    <title>Musical Lyrics Viewer</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             line-height: 1.6;
-            margin: 0; /* Remove default body margin */
+            margin: 0;
             background-color: #f4f4f4;
             color: #333;
-            display: flex; /* Use flexbox for sidebar and main content */
+            display: flex;
+            transition: margin-left 0.3s ease; /* Smooth transition for content when sidebar moves */
         }
+        body.sidebar-collapsed {
+            margin-left: 0;
+        }
+
+        /* --- Sidebar Navigation --- */
         #sidebar-nav {
             width: 250px;
             background-color: #333;
             color: #fff;
             padding: 20px 0;
             box-shadow: 2px 0 5px rgba(0,0,0,0.2);
-            overflow-y: auto; /* Enable scrolling for long menus */
-            flex-shrink: 0; /* Prevent sidebar from shrinking */
-            position: sticky; /* Make sidebar stick */
-            top: 0; /* Stick to the top */
-            height: 100vh; /* Full viewport height */
+            overflow-y: auto;
+            flex-shrink: 0;
+            position: fixed; /* Fixed position */
+            top: 0;
+            left: 0;
+            height: 100vh;
+            transform: translateX(0); /* Start visible */
+            transition: transform 0.3s ease; /* Smooth slide-in/out */
+            z-index: 1000; /* Ensure it's above other content */
         }
+        #sidebar-nav.collapsed {
+            transform: translateX(-100%); /* Slide out */
+        }
+
         #sidebar-nav h2 {
             text-align: center;
-            color: #ffcc00; /* Gold color for menu title */
+            color: #ffcc00;
             margin-top: 0;
             padding-bottom: 10px;
             border-bottom: 1px solid #555;
@@ -42,7 +56,8 @@
             margin-bottom: 5px;
         }
         .nav-saga-item a {
-            display: block;
+            display: flex; /* Use flex for icon and text alignment */
+            align-items: center; /* Vertically align items */
             padding: 10px 20px;
             color: #fff;
             text-decoration: none;
@@ -55,26 +70,35 @@
             background-color: #777;
         }
         .nav-saga-item a.active {
-            background-color: #007bff; /* Highlight active saga */
+            background-color: #007bff;
             color: #fff;
         }
+        .nav-saga-item a img { /* Style for icons in nav menu */
+            width: 24px; /* Icon size */
+            height: 24px;
+            margin-right: 10px;
+            border-radius: 50%; /* Make icons circular */
+            object-fit: cover;
+            border: 1px solid #ffcc00;
+        }
+
         .nav-song-list {
             list-style: none;
             padding-left: 20px;
-            max-height: 0; /* Collapsed by default */
+            max-height: 0;
             overflow: hidden;
-            transition: max-height 0.3s ease-out; /* Smooth collapse/expand */
+            transition: max-height 0.3s ease-out;
         }
         .nav-saga-item.expanded .nav-song-list {
-            max-height: 500px; /* Adjust as needed, sufficiently large */
+            max-height: 500px;
         }
         .nav-song-item a {
             display: block;
-            padding: 8px 0 8px 10px; /* Indent songs more */
+            padding: 8px 0 8px 10px;
             color: #ccc;
             text-decoration: none;
             font-size: 0.9em;
-            border-left: 3px solid #777; /* Subtle border for songs */
+            border-left: 3px solid #777;
             margin-left: 5px;
         }
         .nav-song-item a:hover {
@@ -82,16 +106,46 @@
             background-color: #444;
         }
         .nav-song-item a.active {
-            color: #ffcc00; /* Gold highlight for active song */
+            color: #ffcc00;
             font-weight: bold;
             background-color: #444;
         }
 
-        /* Main content area */
-        .main-content {
-            flex-grow: 1; /* Allow main content to take remaining space */
-            padding: 20px;
+        /* --- Menu Toggle Button --- */
+        #menu-toggle {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 1001; /* Above sidebar when collapsed */
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.5em;
+            line-height: 1;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: left 0.3s ease, background-color 0.2s;
         }
+        #menu-toggle:hover {
+            background-color: #0056b3;
+        }
+        body:not(.sidebar-collapsed) #menu-toggle {
+             left: 265px; /* Move button right when sidebar is open (sidebar width + some padding) */
+        }
+
+        /* --- Main Content Area --- */
+        .main-content {
+            flex-grow: 1;
+            padding: 20px;
+            margin-left: 250px; /* Initial margin for sidebar */
+            transition: margin-left 0.3s ease; /* Smooth transition */
+        }
+        body.sidebar-collapsed .main-content {
+            margin-left: 0; /* No margin when sidebar collapsed */
+        }
+
         .container {
             max-width: 900px;
             margin: auto;
@@ -101,34 +155,46 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
         h1 {
-            color: #880056; /* Darker purple for musical title */
+            color: #880056;
             text-align: center;
             margin-bottom: 30px;
             font-size: 2.5em;
             text-transform: uppercase;
         }
-        .musical {
-            margin-bottom: 40px;
-        }
         .saga {
-            border: 1px solid #c9b4e7; /* Lighter purple border */
+            border: 1px solid #c9b4e7;
             border-radius: 8px;
             margin-bottom: 30px;
             padding: 20px;
-            background-color: #f7f3fd; /* Very light purple background */
+            background-color: #f7f3fd;
+            display: flex; /* For aligning icon and name */
+            flex-direction: column; /* Stack icon/name and songs */
+        }
+        .saga-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e0d1f7;
+            padding-bottom: 10px;
+        }
+        .saga-header img { /* Style for icons in main content */
+            width: 50px;
+            height: 50px;
+            margin-right: 15px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #6a0dad;
         }
         .saga-name {
             font-size: 2em;
-            color: #6a0dad; /* Royal purple for saga names */
-            margin-bottom: 20px;
+            color: #6a0dad;
             font-weight: bold;
-            border-bottom: 2px solid #e0d1f7;
-            padding-bottom: 10px;
+            margin: 0; /* Remove default h2 margin */
         }
         .song {
             margin-bottom: 20px;
             padding-left: 15px;
-            border-left: 3px solid #8a2be2; /* Blue-violet for song separator */
+            border-left: 3px solid #8a2be2;
         }
         .song-name {
             font-size: 1.5em;
@@ -137,7 +203,7 @@
             font-weight: bold;
         }
         .lyrics {
-            white-space: pre-wrap; /* Preserves line breaks from the text file */
+            white-space: pre-wrap;
             background-color: #f9f9f9;
             padding: 10px;
             border-radius: 4px;
@@ -155,6 +221,8 @@
     </style>
 </head>
 <body>
+    <button id="menu-toggle">☰</button>
+
     <nav id="sidebar-nav">
         <h2>Musical Index</h2>
         <ul id="nav-list">
@@ -175,7 +243,22 @@
             const musicContainer = document.getElementById('music-container');
             const loadingMessage = document.getElementById('loading-message');
             const navList = document.getElementById('nav-list');
-            const filePath = 'epic.txt'; // <-- CHANGED HERE!
+            const menuToggle = document.getElementById('menu-toggle');
+            const sidebarNav = document.getElementById('sidebar-nav');
+            const body = document.body;
+
+            const filePath = 'epic.txt';
+
+            // --- Menu Toggle Logic ---
+            menuToggle.addEventListener('click', () => {
+                sidebarNav.classList.toggle('collapsed');
+                body.classList.toggle('sidebar-collapsed');
+            });
+
+            // Initial state: collapse sidebar on load for a cleaner first view
+            sidebarNav.classList.add('collapsed');
+            body.classList.add('sidebar-collapsed');
+
 
             // Function to parse the plain text file
             function parseMusicalFile(text) {
@@ -197,7 +280,6 @@
                     }
 
                     if (trimmedLine.startsWith('**')) {
-                        // New Saga detected
                         if (currentSong && lyricsBuffer.length > 0) {
                             currentSong.lyrics = lyricsBuffer.join('\n').trim();
                             lyricsBuffer = [];
@@ -208,7 +290,6 @@
                         musical.sagas.push(currentSaga);
                         currentSong = null;
                     } else if (trimmedLine.startsWith('*')) {
-                        // New Song detected
                         if (currentSong && lyricsBuffer.length > 0) {
                             currentSong.lyrics = lyricsBuffer.join('\n').trim();
                             lyricsBuffer = [];
@@ -225,7 +306,6 @@
                             currentSaga.songs.push(currentSong);
                         }
                     } else if (currentSong) {
-                        // These are lyrics or empty lines within lyrics
                         lyricsBuffer.push(line);
                     } else {
                         if (trimmedLine) {
@@ -241,6 +321,26 @@
                 return musical;
             }
 
+            // Helper to get a sanitized name for image lookup
+            function getSanitizedSagaName(sagaName) {
+                // Assuming saga names are in the format "The [Second Word] Saga"
+                // e.g., "The Troy Saga" -> "Troy.jpg"
+                // e.g., "The Cyclops Saga" -> "Cyclops.jpg"
+                const words = sagaName.split(' ');
+                if (words.length >= 3) {
+                    return words[1]; // Returns the second word (index 1)
+                }
+                // Fallback for names that don't fit the "The X Saga" pattern.
+                // For example, if a saga was just "Circe", this would return "Circe".
+                // If it's "Circe Saga", it would return "Circe".
+                // Adjust this fallback if your non-standard saga names require a different logic.
+                if (words.length >= 2 && words[words.length - 1].toLowerCase() === 'saga') {
+                    return words[0]; // If "Circe Saga", returns "Circe"
+                }
+                return sagaName; // Returns original name if no pattern matches (e.g., "SomethingElse")
+            }
+
+
             // Function to display the parsed data on the webpage and build navigation
             function displayMusic(musicalData) {
                 loadingMessage.style.display = 'none';
@@ -252,36 +352,67 @@
                 }
 
                 musicalData.sagas.forEach((saga, sagaIndex) => {
-                    // Create main content elements
+                    const sanitizedSagaName = getSanitizedSagaName(saga.name);
+                    const iconPath = `icons/${sanitizedSagaName}.jpg`; // Assumes .jpg extension
+
+                    // --- Main Content Elements ---
                     const sagaDiv = document.createElement('div');
                     sagaDiv.classList.add('saga');
-                    sagaDiv.id = `saga-${sagaIndex}`; // Add ID for navigation
+                    sagaDiv.id = `saga-${sagaIndex}`;
+
+                    const sagaHeader = document.createElement('div');
+                    sagaHeader.classList.add('saga-header');
+
+                    const sagaIconMain = document.createElement('img');
+                    sagaIconMain.src = iconPath;
+                    sagaIconMain.alt = `${saga.name} icon`;
+                    sagaIconMain.onerror = () => { sagaIconMain.style.display = 'none'; }; // Hide if image not found
+                    sagaHeader.appendChild(sagaIconMain);
 
                     const sagaNameElem = document.createElement('h2');
                     sagaNameElem.classList.add('saga-name');
                     sagaNameElem.textContent = saga.name;
-                    sagaDiv.appendChild(sagaNameElem);
+                    sagaHeader.appendChild(sagaNameElem);
+                    sagaDiv.appendChild(sagaHeader);
 
-                    // Create navigation menu item for saga
+                    // --- Navigation Menu Items ---
                     const navSagaLi = document.createElement('li');
                     navSagaLi.classList.add('nav-saga-item');
+
                     const navSagaLink = document.createElement('a');
                     navSagaLink.href = `#saga-${sagaIndex}`;
-                    navSagaLink.textContent = saga.name;
+                    
+                    const navSagaIcon = document.createElement('img');
+                    navSagaIcon.src = iconPath;
+                    navSagaIcon.alt = `${saga.name} icon`;
+                    navSagaIcon.onerror = () => { navSagaIcon.style.display = 'none'; }; // Hide if image not found
+                    navSagaLink.appendChild(navSagaIcon);
+
+                    const navSagaText = document.createElement('span');
+                    navSagaText.textContent = saga.name;
+                    navSagaLink.appendChild(navSagaText);
+
                     navSagaLi.appendChild(navSagaLink);
 
                     const navSongUl = document.createElement('ul');
                     navSongUl.classList.add('nav-song-list');
                     navSagaLi.appendChild(navSongUl);
 
-                    // Add click listener to toggle song list
+                    // Add click listener to toggle song list and scroll
                     navSagaLink.addEventListener('click', (e) => {
                         e.preventDefault();
-                        const targetId = e.target.getAttribute('href').substring(1);
+                        const targetId = e.target.closest('a').getAttribute('href').substring(1); // Use closest('a') to handle clicks on img/span
                         document.getElementById(targetId).scrollIntoView({ behavior: 'smooth' });
 
-                        // Toggle expand/collapse state
+                        // Toggle expand/collapse state for this saga's songs
                         navSagaLi.classList.toggle('expanded');
+
+                        // Optional: Collapse other sagas when one is expanded
+                        document.querySelectorAll('.nav-saga-item').forEach(item => {
+                            if (item !== navSagaLi) {
+                                item.classList.remove('expanded');
+                            }
+                        });
                     });
 
 
@@ -289,7 +420,7 @@
                         // Create main content elements
                         const songDiv = document.createElement('div');
                         songDiv.classList.add('song');
-                        songDiv.id = `song-${sagaIndex}-${songIndex}`; // Add ID for navigation
+                        songDiv.id = `song-${sagaIndex}-${songIndex}`;
 
                         const songNameElem = document.createElement('h3');
                         songNameElem.classList.add('song-name');
@@ -317,6 +448,10 @@
                             e.preventDefault();
                             const targetId = e.target.getAttribute('href').substring(1);
                             document.getElementById(targetId).scrollIntoView({ behavior: 'smooth' });
+                            
+                            // Collapse sidebar after clicking a song link
+                            sidebarNav.classList.add('collapsed');
+                            body.classList.add('sidebar-collapsed');
                         });
                     });
 
@@ -324,55 +459,57 @@
                     navList.appendChild(navSagaLi);
                 });
 
-                // Add scroll listener for active link highlighting
+                // --- Scroll Listener for Active Link Highlighting ---
                 window.addEventListener('scroll', () => {
                     const sagas = document.querySelectorAll('.saga');
                     const songs = document.querySelectorAll('.song');
-                    const navSagaLinks = document.querySelectorAll('.nav-saga-item a');
+                    const navSagaLinks = document.querySelectorAll('.nav-saga-item > a'); // Direct children 'a'
                     const navSongLinks = document.querySelectorAll('.nav-song-item a');
 
                     let activeSectionId = '';
                     let activeSongId = '';
 
-                    // Determine which saga/song is currently in view
-                    // Check songs first for more granular highlighting
+                    // Prioritize song highlighting
                     let foundActiveSong = false;
-                    for (let i = 0; i < songs.length; i++) {
+                    // Iterate backwards to prioritize elements higher on screen when multiple are in view
+                    for (let i = songs.length - 1; i >= 0; i--) {
                         const song = songs[i];
                         const rect = song.getBoundingClientRect();
-                        // Check if the song's top is within the middle half of the viewport
-                        if (rect.top <= window.innerHeight * 0.6 && rect.bottom >= window.innerHeight * 0.4) {
+                        // Song is considered active if its top is visible and within a reasonable range from the top
+                        // or if it spans across the middle of the viewport.
+                        if (rect.top <= window.innerHeight / 3 && rect.bottom > window.innerHeight / 3) {
                             activeSongId = song.id;
                             foundActiveSong = true;
-                            break; // Found the most relevant song, stop checking
+                            break;
                         }
                     }
 
                     if (!foundActiveSong) {
-                         for (let i = 0; i < sagas.length; i++) {
+                         // Iterate backwards for sagas if no song is clearly active
+                         for (let i = sagas.length - 1; i >= 0; i--) {
                             const saga = sagas[i];
                             const rect = saga.getBoundingClientRect();
-                            if (rect.top <= window.innerHeight * 0.6 && rect.bottom >= window.innerHeight * 0.4) {
+                            if (rect.top <= window.innerHeight / 3 && rect.bottom > window.innerHeight / 3) {
                                 activeSectionId = saga.id;
                                 break;
                             }
                         }
                     }
 
-                    // Remove active class from all saga links
+
+                    // Remove active/expanded from all nav items initially
                     navSagaLinks.forEach(link => link.classList.remove('active'));
-                    // Remove active class from all song links
                     navSongLinks.forEach(link => link.classList.remove('active'));
-                    // Collapse all saga lists
-                    document.querySelectorAll('.nav-saga-item').forEach(item => item.classList.remove('expanded'));
+                    document.querySelectorAll('.nav-saga-item').forEach(item => {
+                        // Only collapse if it's not the parent of an active song
+                        // This logic is slightly adjusted to manage expanded state more precisely
+                    });
 
-
-                    // Apply active class to the visible saga/song
+                    // Apply active class to the visible saga/song and manage expanded state
                     if (activeSongId) {
                         const activeLink = document.querySelector(`.nav-song-item a[href="#${activeSongId}"]`);
                         if (activeLink) {
                             activeLink.classList.add('active');
-                            // Also expand the parent saga and activate the parent saga link
                             const parentSagaLi = activeLink.closest('.nav-saga-item');
                             if (parentSagaLi) {
                                 parentSagaLi.classList.add('expanded'); // Ensure parent saga is expanded
@@ -392,6 +529,14 @@
                             }
                         }
                     }
+
+                    // After setting active, collapse any non-active sagas
+                    document.querySelectorAll('.nav-saga-item').forEach(item => {
+                        const sagaLink = item.querySelector('.nav-saga-item > a');
+                        if (!sagaLink || !sagaLink.classList.contains('active')) {
+                            item.classList.remove('expanded');
+                        }
+                    });
                 });
             }
 
@@ -399,7 +544,7 @@
             fetch(filePath)
                 .then(response => {
                     if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status} - Could not load ${filePath}. Make sure it's in the same directory or accessible.`);
+                        throw new Error(`HTTP error! status: ${response.status} - Could not load ${filePath}. Please ensure the file exists and a local server is running if viewing locally. Check console for details.`);
                     }
                     return response.text();
                 })
@@ -409,7 +554,7 @@
                 })
                 .catch(error => {
                     console.error('Error fetching or parsing musical data:', error);
-                    loadingMessage.textContent = `Failed to load musical data: ${error.message}. Please ensure the file exists and a local server is running if viewing locally.`;
+                    loadingMessage.textContent = `Failed to load musical data: ${error.message}. Please ensure the file 'epic.txt' exists in the same directory as 'index.html', and that you are running a local web server (e.g., using Python's http.server).`;
                     loadingMessage.style.color = 'red';
                 });
         });
