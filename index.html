@@ -3,14 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Epic:The Musical</title>
+    <title>Musical Lyrics Viewer</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             line-height: 1.6;
-            margin: 20px;
+            margin: 0; /* Remove default body margin */
             background-color: #f4f4f4;
             color: #333;
+            display: flex; /* Use flexbox for sidebar and main content */
+        }
+        #sidebar-nav {
+            width: 250px;
+            background-color: #333;
+            color: #fff;
+            padding: 20px 0;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+            overflow-y: auto; /* Enable scrolling for long menus */
+            flex-shrink: 0; /* Prevent sidebar from shrinking */
+            position: sticky; /* Make sidebar stick */
+            top: 0; /* Stick to the top */
+            height: 100vh; /* Full viewport height */
+        }
+        #sidebar-nav h2 {
+            text-align: center;
+            color: #ffcc00; /* Gold color for menu title */
+            margin-top: 0;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #555;
+            margin-bottom: 20px;
+        }
+        #sidebar-nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .nav-saga-item {
+            margin-bottom: 5px;
+        }
+        .nav-saga-item a {
+            display: block;
+            padding: 10px 20px;
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+            background-color: #555;
+            margin-bottom: 5px;
+            border-radius: 4px;
+        }
+        .nav-saga-item a:hover {
+            background-color: #777;
+        }
+        .nav-saga-item a.active {
+            background-color: #007bff; /* Highlight active saga */
+            color: #fff;
+        }
+        .nav-song-list {
+            list-style: none;
+            padding-left: 20px;
+            max-height: 0; /* Collapsed by default */
+            overflow: hidden;
+            transition: max-height 0.3s ease-out; /* Smooth collapse/expand */
+        }
+        .nav-saga-item.expanded .nav-song-list {
+            max-height: 500px; /* Adjust as needed, sufficiently large */
+        }
+        .nav-song-item a {
+            display: block;
+            padding: 8px 0 8px 10px; /* Indent songs more */
+            color: #ccc;
+            text-decoration: none;
+            font-size: 0.9em;
+            border-left: 3px solid #777; /* Subtle border for songs */
+            margin-left: 5px;
+        }
+        .nav-song-item a:hover {
+            color: #fff;
+            background-color: #444;
+        }
+        .nav-song-item a.active {
+            color: #ffcc00; /* Gold highlight for active song */
+            font-weight: bold;
+            background-color: #444;
+        }
+
+        /* Main content area */
+        .main-content {
+            flex-grow: 1; /* Allow main content to take remaining space */
+            padding: 20px;
         }
         .container {
             max-width: 900px;
@@ -56,12 +136,6 @@
             margin-bottom: 8px;
             font-weight: bold;
         }
-        .characters {
-            font-style: italic;
-            color: #666;
-            margin-bottom: 10px;
-            font-size: 0.9em;
-        }
         .lyrics {
             white-space: pre-wrap; /* Preserves line breaks from the text file */
             background-color: #f9f9f9;
@@ -81,12 +155,264 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1></h1> <div id="loading-message">Loading lyrics...</div>
-        <div id="music-container">
-            </div>
+    <nav id="sidebar-nav">
+        <h2>Musical Index</h2>
+        <ul id="nav-list">
+            </ul>
+    </nav>
+
+    <div class="main-content">
+        <div class="container">
+            <h1></h1> <div id="loading-message">Loading lyrics...</div>
+            <div id="music-container">
+                </div>
+        </div>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const musicalTitleElem = document.querySelector('h1');
+            const musicContainer = document.getElementById('music-container');
+            const loadingMessage = document.getElementById('loading-message');
+            const navList = document.getElementById('nav-list');
+            const filePath = 'epic.txt'; // <-- CHANGED HERE!
+
+            // Function to parse the plain text file
+            function parseMusicalFile(text) {
+                let musical = { title: '', sagas: [] };
+                let currentSaga = null;
+                let currentSong = null;
+                let lyricsBuffer = [];
+                let isFirstLine = true;
+
+                const lines = text.split('\n');
+
+                lines.forEach(line => {
+                    const trimmedLine = line.trim();
+
+                    if (isFirstLine) {
+                        musical.title = trimmedLine;
+                        isFirstLine = false;
+                        return;
+                    }
+
+                    if (trimmedLine.startsWith('**')) {
+                        // New Saga detected
+                        if (currentSong && lyricsBuffer.length > 0) {
+                            currentSong.lyrics = lyricsBuffer.join('\n').trim();
+                            lyricsBuffer = [];
+                        }
+
+                        const sagaName = trimmedLine.substring(2).trim();
+                        currentSaga = { name: sagaName, songs: [] };
+                        musical.sagas.push(currentSaga);
+                        currentSong = null;
+                    } else if (trimmedLine.startsWith('*')) {
+                        // New Song detected
+                        if (currentSong && lyricsBuffer.length > 0) {
+                            currentSong.lyrics = lyricsBuffer.join('\n').trim();
+                            lyricsBuffer = [];
+                        }
+
+                        const songName = trimmedLine.substring(1).trim();
+                        currentSong = { name: songName, lyrics: '' };
+                        if (currentSaga) {
+                            currentSaga.songs.push(currentSong);
+                        } else {
+                            console.warn(`Song "${songName}" found without a preceding saga. Adding to a default/unnamed saga.`);
+                            currentSaga = { name: 'Unnamed Saga', songs: [] };
+                            musical.sagas.push(currentSaga);
+                            currentSaga.songs.push(currentSong);
+                        }
+                    } else if (currentSong) {
+                        // These are lyrics or empty lines within lyrics
+                        lyricsBuffer.push(line);
+                    } else {
+                        if (trimmedLine) {
+                             console.warn(`Skipping unexpected line: "${trimmedLine}"`);
+                        }
+                    }
+                });
+
+                if (currentSong && lyricsBuffer.length > 0) {
+                    currentSong.lyrics = lyricsBuffer.join('\n').trim();
+                }
+
+                return musical;
+            }
+
+            // Function to display the parsed data on the webpage and build navigation
+            function displayMusic(musicalData) {
+                loadingMessage.style.display = 'none';
+                musicalTitleElem.textContent = musicalData.title || 'Untitled Musical';
+
+                if (musicalData.sagas.length === 0) {
+                    musicContainer.innerHTML = '<p>No musical data found or parsed.</p>';
+                    return;
+                }
+
+                musicalData.sagas.forEach((saga, sagaIndex) => {
+                    // Create main content elements
+                    const sagaDiv = document.createElement('div');
+                    sagaDiv.classList.add('saga');
+                    sagaDiv.id = `saga-${sagaIndex}`; // Add ID for navigation
+
+                    const sagaNameElem = document.createElement('h2');
+                    sagaNameElem.classList.add('saga-name');
+                    sagaNameElem.textContent = saga.name;
+                    sagaDiv.appendChild(sagaNameElem);
+
+                    // Create navigation menu item for saga
+                    const navSagaLi = document.createElement('li');
+                    navSagaLi.classList.add('nav-saga-item');
+                    const navSagaLink = document.createElement('a');
+                    navSagaLink.href = `#saga-${sagaIndex}`;
+                    navSagaLink.textContent = saga.name;
+                    navSagaLi.appendChild(navSagaLink);
+
+                    const navSongUl = document.createElement('ul');
+                    navSongUl.classList.add('nav-song-list');
+                    navSagaLi.appendChild(navSongUl);
+
+                    // Add click listener to toggle song list
+                    navSagaLink.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const targetId = e.target.getAttribute('href').substring(1);
+                        document.getElementById(targetId).scrollIntoView({ behavior: 'smooth' });
+
+                        // Toggle expand/collapse state
+                        navSagaLi.classList.toggle('expanded');
+                    });
+
+
+                    saga.songs.forEach((song, songIndex) => {
+                        // Create main content elements
+                        const songDiv = document.createElement('div');
+                        songDiv.classList.add('song');
+                        songDiv.id = `song-${sagaIndex}-${songIndex}`; // Add ID for navigation
+
+                        const songNameElem = document.createElement('h3');
+                        songNameElem.classList.add('song-name');
+                        songNameElem.textContent = song.name;
+                        songDiv.appendChild(songNameElem);
+
+                        const lyricsElem = document.createElement('pre');
+                        lyricsElem.classList.add('lyrics');
+                        lyricsElem.textContent = song.lyrics;
+                        songDiv.appendChild(lyricsElem);
+
+                        sagaDiv.appendChild(songDiv);
+
+                        // Create navigation menu item for song
+                        const navSongLi = document.createElement('li');
+                        navSongLi.classList.add('nav-song-item');
+                        const navSongLink = document.createElement('a');
+                        navSongLink.href = `#song-${sagaIndex}-${songIndex}`;
+                        navSongLink.textContent = song.name;
+                        navSongLi.appendChild(navSongLink);
+                        navSongUl.appendChild(navSongLi);
+
+                        // Add click listener to scroll to song
+                        navSongLink.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            const targetId = e.target.getAttribute('href').substring(1);
+                            document.getElementById(targetId).scrollIntoView({ behavior: 'smooth' });
+                        });
+                    });
+
+                    musicContainer.appendChild(sagaDiv);
+                    navList.appendChild(navSagaLi);
+                });
+
+                // Add scroll listener for active link highlighting
+                window.addEventListener('scroll', () => {
+                    const sagas = document.querySelectorAll('.saga');
+                    const songs = document.querySelectorAll('.song');
+                    const navSagaLinks = document.querySelectorAll('.nav-saga-item a');
+                    const navSongLinks = document.querySelectorAll('.nav-song-item a');
+
+                    let activeSectionId = '';
+                    let activeSongId = '';
+
+                    // Determine which saga/song is currently in view
+                    // Check songs first for more granular highlighting
+                    let foundActiveSong = false;
+                    for (let i = 0; i < songs.length; i++) {
+                        const song = songs[i];
+                        const rect = song.getBoundingClientRect();
+                        // Check if the song's top is within the middle half of the viewport
+                        if (rect.top <= window.innerHeight * 0.6 && rect.bottom >= window.innerHeight * 0.4) {
+                            activeSongId = song.id;
+                            foundActiveSong = true;
+                            break; // Found the most relevant song, stop checking
+                        }
+                    }
+
+                    if (!foundActiveSong) {
+                         for (let i = 0; i < sagas.length; i++) {
+                            const saga = sagas[i];
+                            const rect = saga.getBoundingClientRect();
+                            if (rect.top <= window.innerHeight * 0.6 && rect.bottom >= window.innerHeight * 0.4) {
+                                activeSectionId = saga.id;
+                                break;
+                            }
+                        }
+                    }
+
+                    // Remove active class from all saga links
+                    navSagaLinks.forEach(link => link.classList.remove('active'));
+                    // Remove active class from all song links
+                    navSongLinks.forEach(link => link.classList.remove('active'));
+                    // Collapse all saga lists
+                    document.querySelectorAll('.nav-saga-item').forEach(item => item.classList.remove('expanded'));
+
+
+                    // Apply active class to the visible saga/song
+                    if (activeSongId) {
+                        const activeLink = document.querySelector(`.nav-song-item a[href="#${activeSongId}"]`);
+                        if (activeLink) {
+                            activeLink.classList.add('active');
+                            // Also expand the parent saga and activate the parent saga link
+                            const parentSagaLi = activeLink.closest('.nav-saga-item');
+                            if (parentSagaLi) {
+                                parentSagaLi.classList.add('expanded'); // Ensure parent saga is expanded
+                                const parentSagaLink = parentSagaLi.querySelector('.nav-saga-item > a');
+                                if (parentSagaLink) {
+                                    parentSagaLink.classList.add('active'); // Activate parent saga link
+                                }
+                            }
+                        }
+                    } else if (activeSectionId) {
+                        const activeLink = document.querySelector(`.nav-saga-item a[href="#${activeSectionId}"]`);
+                        if (activeLink) {
+                            activeLink.classList.add('active');
+                            const parentSagaLi = activeLink.closest('.nav-saga-item');
+                            if (parentSagaLi) {
+                                parentSagaLi.classList.add('expanded'); // Ensure saga is expanded
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Fetch the text file and then process it
+            fetch(filePath)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status} - Could not load ${filePath}. Make sure it's in the same directory or accessible.`);
+                    }
+                    return response.text();
+                })
+                .then(text => {
+                    const musicalData = parseMusicalFile(text);
+                    displayMusic(musicalData);
+                })
+                .catch(error => {
+                    console.error('Error fetching or parsing musical data:', error);
+                    loadingMessage.textContent = `Failed to load musical data: ${error.message}. Please ensure the file exists and a local server is running if viewing locally.`;
+                    loadingMessage.style.color = 'red';
+                });
+        });
+    </script>
 </body>
 </html>
