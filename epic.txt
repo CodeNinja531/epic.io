@@ -1,6 +1,6 @@
 EPIC THE MUSICAL
-The Troy Saga
-The Horse and the Infant
+**The Troy Saga
+*The Horse and the Infant
 [ODYSSEUS, SOLDIERS]
 Alright my brothers listen closely
 Tonight we make the Trojans pay
@@ -117,7 +117,7 @@ When does a man become a monster? Forgive me
 When does a man become a monster? Forgive me
 I'm just a man
 
-Full Speed Ahead
+*Full Speed Ahead
 [ODYSSEUS, SOLDIERS]
 Six hundred men, six hundred men under my command
 With only one goal in mind
@@ -185,7 +185,7 @@ We're up, we're off, and away we go
 We're up, we're off, and a-
 Full speed ahead
 
-Open arms
+*Open arms
 [POLITES]
 You can relax, my friend
 [ODYSSEUS]
@@ -274,7 +274,7 @@ Greet the world with open arms
 [POLITES]
 You can relax, my friend
 
-Warrior of the Mind
+*Warrior of the Mind
 [ATHENA]
 Have you forgotten the lessons I taught you?
 
@@ -370,9 +370,9 @@ Don't forget that you're a warrior of a very special kind
 You are a warrior of the mind
 Don't disappoint me
 
-The Cyclops Saga
+**The Cyclops Saga
 
-Polyphemus
+*Polyphemus
 Over here
 Look at all this food!
 Look at all these sheep!
@@ -429,7 +429,7 @@ You shall be the final man to die
 What
 Watch out!
 
-Survive
+*Survive
 [ENSEMBLE]
 Po-ly-phe-mus
 Po-ly-phe-mus
@@ -507,7 +507,7 @@ Escape is not allowed
 You won’t live through this day now die
 Die…
 
-Remember them
+*Remember them
 [EURYLOCHUS]
 Captain!
 Captain!
@@ -635,7 +635,7 @@ When we met, I led with peace
 While you fed your inner beast
 But my comrades will not die in vain
 
-Remember them
+*Remember them
 The next time that you dare choose not to spare
 Remember them
 Remember us
@@ -726,8 +726,8 @@ This storm's our final fight
 There's no time to die
 Comrades?
 
-The Ocean Saga
-Storm
+**The Ocean Saga
+*Storm
 [SOLDIERS]
 Sir!
 
@@ -798,7 +798,7 @@ In the sky
 Storm, storm
 
 
-Luck Runs Out
+*Luck Runs Out
 [Eurylochus]
 Please don't tell me you're about to do what I think you'll do
 
@@ -867,7 +867,7 @@ Okay
 
 Thank you
 
-Keep Your Friends Close
+*Keep Your Friends Close
 [ODYSSEUS]
 Great Wind God Aeolus
 I don't know if you know this
@@ -876,36 +876,29 @@ I ask for your assistance
 So we at last can go the distance
 Can you cast the perfect wind for us and aid our journey home?
 
-
 [AEOLUS]
 Ha ha ha
 I am the wind, twisting and turning
 I give the fire enough to stay burning
 Let's play a game
 
-
 [ODYSSUS]
 A game?
-
 
 [AEOLUS]
 That's what I'm serving
 And if you win, you will get what you're yearning
 
-
 [ODYSSEUS]
 Deal
-
 
 [AEOLUS]
 Take a look right here at this bag
 It has the winds of the storm all trapped
 All you gotta do is not open this bag
 
-
 [ODYSSEUS]
 Sounds too easy, what's the catch?
-
 
 [AEOLUS, WINIONS]
 Ha ha ha
@@ -914,10 +907,8 @@ Never rеally know who you can trust
 If they wanna get the bag open, you gotta say "no, sir"
 Sometimes killing is a must
 
-
 [ODYSSEUS]
 What?
-
 
 [AEOLUS]
 Cause the end always justify the means
@@ -925,11 +916,9 @@ Friends turn into foes in rivalries
 So keep your friends close and your enemies closer
 Never really know who you can trust
 
-
 [PERIMEDES/ELPENOR]
 Captain! What's happening?
 What's trapped in that bag?
-
 
 [ODYSSEUS]
 Something dangerous, friends!
@@ -969,7 +958,6 @@ Everything's changed since Polites, so!
 Keep your friends close, and your enemies closer!
 Never really know who you can trust!
 
-
 [ODYSSEUS, SOLDIERS]
 For nine days, I've stayed wide awake
 Tryna make it home with no storm or tidal wave
@@ -980,7 +968,6 @@ I can't wait to make some new memories...
 Telemachus
 Time for me to be the father I never was
 
-
 [ODYSSEUS, PENELOPE & TELEMACHUS]
 Just keep your eyes open
 Why are my eyes and my heart and my soul so heavy
@@ -990,20 +977,16 @@ Just keep your eyes open
 So much has changed, but I'm the same, yes I'm the same
 'Just keep your eyes open
 
-
 [SOLDIERS]
 Keep your eyes open
-
 
 [PENELOPE]
 Wake up!
 Wake up, Odysseus, they're opening the bag
 Wake up!
 
-
 [ODYSSEUS]
 No!
-
 
 [AEOLUS, WINIONS, CREW]
 Keep your friends close and your enemies closer
@@ -1012,42 +995,34 @@ Never really know who you can trust
 Storm
 Full speed ahead
 
-
 [ODYSSEUS]
 Where's the storm taking us?
-
 
 [AEOLUS]
 I said to keep the bag closed, but you weren't compliant
 If I had to guess? You're heading to the
 
-
 [AEOLUS & WINIONS]
 Land of the giants
-
 
 [CREW]
 Storm, storm
 
-
 [ODYSSEUS]
 Help me close the bag!
 
-
 [EURYLOCHUS]
 But sir, it's too late
-
 
 [ODYSSEUS]
 We can save whatever wind is left to use another day
 Come on!
 
-
 [POSEIDON]
 Odysseus of Ithaca!
 Do you know who I am?
 
-Ruthlessness
+*Ruthlessness
 [LAESTRYGONIANS]
 Poseidon, Poseidon, Poseidon, Poseidon, Poseidon, Poseidon, Poseidon
 
@@ -1154,11 +1129,10 @@ All I gotta do is open this bag
 
 [POSEIDON]
 What?
-
 Remember me
 
-The Circe Saga
-Puppeteer
+**The Circe Saga
+*Puppeteer
 Captain, I have something that I must confess
 Something that I must get off my chest
 Until it is said, I cannot rest
@@ -1240,7 +1214,7 @@ I got all the power, yeah, I got all the power
 No, I'm not a player, I'm a puppeteer
 No, I don't play, I puppeteer, yeah
 
-Wouldn’t You Like
+*Wouldn’t You Like
 [HERMES]
 I must say what a brilliant speech you gave
 
@@ -1311,7 +1285,7 @@ Wouldn't you like your outcome preferred?
 Deep in the night the fight can be tragic
 I'll help you conquer her
 
-[HERMES & ENSEMBLE, ODYSSEUS ]
+[HERMES & ENSEMBLE, ODYSSEUS]
 (Oh) Wouldn't you like a taste of the power?
 Wouldn't you like to use more than words?
 (Oh) Deep in the night the fight lasts for hours
@@ -1330,7 +1304,7 @@ Don't thank me friend
 You very well may die
 Haha, good luck
 
-Done For
+*Done For
 Lady of the palace, sorry that I ask this
 But I hope that I've been misinformed
 I sent out some scouts to take a look around through here
@@ -1442,8 +1416,8 @@ But there's no puppet here
 No, she's not a player, she's a puppeteer
 No, she's not a player, she's a puppeteer, yeah)
 
-The Underworld Saga
-The Underworld
+**The Underworld Saga
+*The Underworld
 [ODYSSEUS]
 Friends, Circe's instructions were clear
 No matter what we hear
@@ -1551,7 +1525,7 @@ But in The Underworld, your past is always close behind
 Your past is always close behind
 Down in The Underworld
 
-No Longer You
+*No Longer You
 [TIRESIAS]
 I am the prophet with the answers you seek
 Time, I've unlocked it
@@ -1597,7 +1571,7 @@ I see you draw your final breath
 I see a man who gets to make it home alive
 But it's no longer you
 
-Monster
+*Monster
 [ODYSSEUS]
 How has everything been turned against us?
 How did suffering become so endless?
@@ -1661,8 +1635,7 @@ I'll go where Poseidon won't reach us
 And if I gotta drop another infant from a wall
 In an instant so we all don't die
 
-
-[ODYSSEUS, ALL ]
+[ODYSSEUS, ALL]
 Then I'll become the
 Monster
 I will deal the blow
@@ -1685,8 +1658,8 @@ Oh, ruthlessness is mercy upon ourselves
 Monster
 I'll become the monster
 
-The Thunder Saga
-Suffering
+**The Thunder Saga
+*Suffering
 Penelope
 Penelope
 
@@ -1790,7 +1763,7 @@ I will take the suffering from you
 [Odysseus]
 Ah, the things I do for you
 
-Different Beast
+*Different Beast
 [ODYSSEUS]
 Let's cut this charade, you are no wife of mine
 You've been tryna take my life this whole time
@@ -1889,7 +1862,7 @@ Kill 'em all!
 Oh, woah-oh-oh, oh woah-oh-oh, oh, woah-oh-oh
 Odysseus
 
-Scylla
+*Scylla
 [ODYSSEUS]
 The lair of Scylla
 This is our only way home
@@ -1978,7 +1951,7 @@ We must do what it takes to survive
 [SCYLLA & ODYSSEUS]
 We are the same, you and I, I
 
-Mutiny
+*Mutiny
 [EURYLOCHUS]
 Tell you did not know that would happen
 Say you didn't know how that would end
@@ -2131,7 +2104,7 @@ Full speed ahead
 [ODYSSEUS]
 We're too late
 
-Thunder Bringer
+*Thunder Bringer
 [ZEUS]
 Pride is a damsel in distress
 Hiding away where only I can undress her
@@ -2210,8 +2183,8 @@ Lightning, wield her, use and yield her
 Show her what she can't conceal
 For true nature will be revealed
 
-The Wisdom Saga
-Legendary
+**The Wisdom Saga
+*Legendary
 [TELEMACHUS]
 It's just me, myself, and I
 Stuck in my bedroom, living in this world you left behind
@@ -2250,7 +2223,7 @@ The minotaurs, even Cerberus!
 I know life and fate are scary
 But I wanna be legendary
 
-Little Wolf
+*Little Wolf
 [ANTINOUS, SUITORS]
 Fight, little wolf, fight
 Wanna entertain me?
@@ -2359,7 +2332,7 @@ We'll bring blood and tears
 [TELEMACHUS]
 Tell me, Athena, why you came to my aid
 
-Love in Paradise
+*Love in Paradise
 [ATHENA]
 Old friend, it's been ten years since I last saw you
 
@@ -2529,7 +2502,7 @@ Athena!
 He needs my help
 
 
-God Games
+*God Games
 [ATHENA]
 Father, God King
 Rarely do I ask for favors
@@ -2705,8 +2678,8 @@ Is she dead?
 Let him go, please
 Let him go
 
-The Vengeance Saga
-Not Sorry for Loving You
+**The Vengeance Saga
+*Not Sorry for Loving You
 [CALYPSO]
 Someone arrived today
 They said they're taking you away
@@ -2799,7 +2772,7 @@ How am I supposed to get over you?
 [CALYPSO]
 Why in the world won't you love me too?
 
-Dangerous
+*Dangerous
 [ODYSSEUS]
 Six hundred men
 Six hundred deaths under my command
@@ -2923,7 +2896,7 @@ What?
 No, no!
 
 
-Get in the water
+*Get in the water
 [POSEIDON]
 There you are, coward
 
@@ -2991,7 +2964,7 @@ Die
 You can relax, my friend
 I can tell you’re getting nervous
 
-Six Hundred Strike
+*Six Hundred Strike
 [ENSEMBLE]
 Six hundred men, six hundred
 Six hundred men, six hundred
@@ -3089,8 +3062,8 @@ After everything you've done...
 [ODYSSEUS, spoken]
 ...Next to my wife.
 
-The Ithaca Saga
-The Challenge
+**The Ithaca Saga
+*The Challenge
 [PENELOPE]
 I'm supposed to choose a suitor to wear the crown
 I said I would choose as soon as I weave this shroud
@@ -3158,7 +3131,7 @@ Penelope
 Waiting, waiting
 Oh
 
-Hold Them Down
+*Hold Them Down
 [SUITORS]
 Whoever can string the old king's bow
 And shoot through twelve axes cleanly
@@ -3336,9 +3309,6 @@ Let's make the bastard rot
 [MELANTHIUS, spoken]
 Behind you!
 
-[TELEMACHUS stabs AMPHINOMUS]
-
-
 [TELEMACHUS]
 Throw down those weapons
 And I'll ensure you'll be spared
@@ -3425,7 +3395,7 @@ O-dy-sse-us
 [ENSEMBLE, (slowly)]
 O-dy-sse-us
 
-I Can’t Help but Wonder
+*I Can’t Help but Wonder
 [TELEMACHUS, spoken]
 Father?
 
@@ -3524,11 +3494,9 @@ Very well...
 [TELEMACHUS, spoken]
 Father? She's waiting for you!
 
-Would You Fall in Love with Me Again
+*Would You Fall in Love with Me Again
 [ODYSSEUS]
 Penelope...
-
-[ODYSSEUS opens his bedroom door]
 
 [PENELOPE]
 Is it you? Have my prayers been answered?
