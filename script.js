@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const musicalTitleElem = document.querySelector('h1');
     const musicContainer = document.getElementById('music-container');
     const loadingMessage = document.getElementById('loading-message');
-    const filePath = 'my_music.txt'; // Make sure this path is correct
+    const filePath = 'epic.txt'; // Make sure this path is correct
 
     // Function to parse the plain text file
     function parseMusicalFile(text) {
