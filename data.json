@@ -1,0 +1,73 @@
+{
+  "sagaColors": {
+    "Troy": "#DC143C",          
+    "Cyclops": "#4682B4",       
+    "Ocean": "#1E90FF",         
+    "Circe": "#8A2BE2",         
+    "Underworld": "#696969",    
+    "Thunder": "#FFD700",       
+    "Wisdom": "#32CD32",        
+    "Vengeance": "#8B0000",     
+    "Ithaca": "#3CB371"         
+  },
+  "songScores": {
+    "The Troy Saga": {
+      "The Horse and the Infant": "https://example.com/scores/troy/the_horse_and_the_infant_score_online.html",
+      "Just a Man": "https://example.com/scores/troy/just_a_man_score_online.html",
+      "Full Speed Ahead": "https://example.com/scores/troy/full_speed_ahead_score_online.html",
+      "Open Arms": "https://example.com/scores/troy/open_arms_score_online.html",
+      "Warrior of the Mind": "https://example.com/scores/troy/warrior_of_the_mind_score_online.html"
+    },
+    "The Cyclops Saga": {
+      "Polyphemus": "https://example.com/scores/cyclops/polyphemus_score_online.html",
+      "Survive": "https://example.com/scores/cyclops/survive_score_online.html",
+      "Remember Them": "https://example.com/scores/cyclops/remember_them_score_online.html",
+      "My Goodbye": "https://example.com/scores/cyclops/my_goodbye_score_online.html"
+    },
+    "The Ocean Saga": {
+      "Storm": "https://example.com/scores/ocean/storm_score_online.html",
+      "Luck Runs Out": "https://example.com/scores/ocean/luck_runs_out_score_online.html",
+      "Keep Your Friends Close": "https://example.com/scores/ocean/keep_your_friends_close_score_online.html",
+      "Ruthlessness": "https://example.com/scores/ocean/ruthlessness_score_online.html"
+    },
+    "The Circe Saga": {
+      "Puppeteer": "https://example.com/scores/circe/puppeteer_score_online.html",
+      "Wouldn't You Like": "https://example.com/scores/circe/wouldnt_you_like_score_online.html",
+      "Done For": "https://example.com/scores/circe/done_for_score_online.html",
+      "There Are Other Ways": "https://example.com/scores/circe/there_are_other_ways_score_online.html"
+    },
+    "The Underworld Saga": {
+      "The Underworld": "https://example.com/scores/underworld/the_underworld_score_online.html",
+      "No Longer You": "https://example.com/scores/underworld/no_longer_you_score_online.html",
+      "Monster": "https://example.com/scores/underworld/monster_score_online.html",
+      "Suffering": "https://example.com/scores/underworld/suffering_score_online.html"
+    },
+    "The Thunder Saga": {
+      "Different Beast": "https://example.com/scores/thunder/different_beast_score_online.html",
+      "Scylla": "https://example.com/scores/thunder/scylla_score_online.html",
+      "Mutiny": "https://example.com/scores/thunder/mutiny_score_online.html",
+      "Thunder Bringer": "https://example.com/scores/thunder/thunder_bringer_score_online.html"
+    },
+    "The Wisdom Saga": {
+      "Legendary": "https://example.com/scores/wisdom/legendary_score_online.html",
+      "Little Wolf": "https://example.com/scores/wisdom/little_wolf_score_online.html",
+      "We'll Be Fine": "https://example.com/scores/wisdom/well_be_fine_score_online.html"
+    },
+    "The Vengeance Saga": {
+      "Love in Paradise": "https://example.com/scores/vengeance/love_in_paradise_score_online.html",
+      "God Games": "https://example.com/scores/vengeance/god_games_score_online.html",
+      "Not Sorry for Loving You": "https://example.com/scores/vengeance/not_sorry_for_loving_you_score_online.html",
+      "Dangerous": "https://example.com/scores/vengeance/dangerous_score_online.html",
+      "Charybdis": "https://example.com/scores/vengeance/charybdis_score_online.html",
+      "Get in the Water": "https://example.com/scores/vengeance/get_in_the_water_score_online.html",
+      "Six Hundred Strike": "https://example.com/scores/vengeance/six_hundred_strike_score_online.html",
+      "The Challenge": "https://example.com/scores/vengeance/the_challenge_score_online.html",
+      "Hold Them Down": "https://example.com/scores/vengeance/hold_them_down_score_online.html"
+    },
+    "The Ithaca Saga": {
+      "Odysseus": "https://example.com/scores/ithaca/odysseus_score_online.html",
+      "I Can't Help but Wonder": "https://example.com/scores/ithaca/i_cant_help_but_wonder_score_online.html",
+      "Would You Fall in Love with Me Again": "https://example.com/scores/ithaca/would_you_fall_in_love_with_me_again_score_online.html"
+    }
+  }
+}
