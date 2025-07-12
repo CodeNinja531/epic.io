@@ -30,6 +30,9 @@
             transform: translateX(-100%);
             transition: transform 0.3s ease;
             z-index: 1000;
+            padding-bottom: calc(20px + env(safe-area-inset-bottom)); /* Add extra padding for safe area */
+            /* Ensure scrollbar accounts for padding */
+            scroll-padding-bottom: env(safe-area-inset-bottom);
         }
         #sidebar-nav:not(.collapsed) {
             transform: translateX(0);
