@@ -265,7 +265,7 @@
             display: flex;
             gap: 10px;
             padding: 10px;
-            border-radius: 8px;
+            border-radius: 8品种;
             background-color: #e9ecef;
             align-items: center;
         }
@@ -493,7 +493,9 @@
 
                         // Manually set active states for the random song's saga and song link
                         navList.querySelectorAll('a').forEach(link => link.classList.remove('active'));
-                        navList.querySelectorAll('.nav-saga-item').forEach(item => item.classList.remove('expanded'));
+                        
+                        // DO NOT collapse other sagas when jumping to random song
+                        // navList.querySelectorAll('.nav-saga-item').forEach(item => item.classList.remove('expanded'));
 
                         const navSongLink = document.querySelector(`.nav-song-item a[href="#${randomSongDiv.id}"]`);
                         if (navSongLink) {
@@ -668,15 +670,10 @@
                         const targetId = e.target.closest('a').getAttribute('href').substring(1);
                         document.getElementById(targetId).scrollIntoView({ behavior: 'smooth' });
                         
-                        // Toggle expanded state for THIS saga
+                        // Toggle expanded state for THIS saga only
                         navSagaLi.classList.toggle('expanded');
                         
-                        // Collapse other sagas if this one is expanding or staying expanded
-                        document.querySelectorAll('.nav-saga-item').forEach(item => {
-                            if (item !== navSagaLi) {
-                                item.classList.remove('expanded');
-                            }
-                        });
+                        // Do NOT collapse other sagas
                         
                         // Update background immediately on menu click
                         updateBodyBackground(saga.name);
@@ -698,26 +695,24 @@
                         songTitleText.textContent = song.name;
                         songNameElem.appendChild(songTitleText);
 
-                        // Add tiny music score link if available
+                        // Add tiny music score link ALWAYS, even if path is empty
                         const scorePath = appData.songScores[saga.name] ? appData.songScores[saga.name][song.name] : null;
-                        if (scorePath) {
-                            const tinyScoreLink = document.createElement('a');
-                            tinyScoreLink.href = scorePath;
-                            tinyScoreLink.textContent = '[Score]';
-                            tinyScoreLink.classList.add('tiny-score-link');
-                            tinyScoreLink.target = '_blank'; // Open in new tab
-                            songNameElem.appendChild(tinyScoreLink);
-                        } else {
-                            // Only warn if the saga and song exist in the appData.songScores structure
-                            // but the specific song entry is missing or null.
-                            if (appData.songScores[saga.name] && Object.prototype.hasOwnProperty.call(appData.songScores[saga.name], song.name)) {
-                                console.warn(`Score path is null/undefined for song: "${song.name}" in saga: "${saga.name}". Check data.json entry.`);
-                            } else {
-                                // This means the song or saga itself isn't listed in songScores
-                                // (which is fine if no score exists for it).
-                                // console.log(`No score entry for song: "${song.name}" in saga: "${saga.name}".`);
-                            }
+                        const tinyScoreLink = document.createElement('a');
+                        tinyScoreLink.href = scorePath || '#'; // Use '#' if no path
+                        tinyScoreLink.textContent = '[Score]';
+                        tinyScoreLink.classList.add('tiny-score-link');
+                        tinyScoreLink.target = '_blank'; // Open in new tab
+                        if (!scorePath) {
+                            tinyScoreLink.style.opacity = '0.5'; // Make it slightly dim if no actual link
+                            tinyScoreLink.style.cursor = 'default'; // Change cursor
+                            tinyScoreLink.title = 'No score available'; // Add tooltip
+                            tinyScoreLink.addEventListener('click', (event) => {
+                                if (tinyScoreLink.href === '#') {
+                                    event.preventDefault(); // Prevent default if it's just a placeholder
+                                }
+                            });
                         }
+                        songNameElem.appendChild(tinyScoreLink);
 
                         songDiv.appendChild(songNameElem); // Append the h3 with title and link
 
