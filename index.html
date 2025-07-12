@@ -9,10 +9,10 @@
             font-family: Arial, sans-serif;
             line-height: 1.6;
             margin: 0;
-            background-color: #f4f4f4;
+            background-color: #f4f4f4; /* Default fallback background */
             color: #333;
-            /* Removed display: flex and margin-left related to sidebar push */
-            overflow-x: hidden; /* Prevent horizontal scrollbar if sidebar overflows briefly */
+            overflow-x: hidden;
+            transition: background-color 0.5s ease; /* Smooth transition for background */
         }
 
         /* --- Sidebar Navigation --- */
@@ -23,15 +23,14 @@
             padding: 20px 0;
             box-shadow: 2px 0 5px rgba(0,0,0,0.2);
             overflow-y: auto;
-            position: fixed; /* Always fixed to overlay content */
+            position: fixed;
             top: 0;
             left: 0;
             height: 100vh;
-            transform: translateX(-100%); /* Start hidden (off-screen to the left) */
-            transition: transform 0.3s ease; /* Smooth slide-in/out */
-            z-index: 1000; /* Ensure it's above other content */
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
         }
-        /* When sidebar is NOT collapsed, slide it in */
         #sidebar-nav:not(.collapsed) {
             transform: translateX(0);
         }
@@ -53,8 +52,8 @@
             margin-bottom: 5px;
         }
         .nav-saga-item a {
-            display: flex; /* Use flex for icon and text alignment */
-            align-items: center; /* Vertically align items */
+            display: flex;
+            align-items: center;
             padding: 10px 20px;
             color: #fff;
             text-decoration: none;
@@ -70,11 +69,11 @@
             background-color: #007bff;
             color: #fff;
         }
-        .nav-saga-item a img { /* Style for icons in nav menu */
-            width: 24px; /* Icon size */
+        .nav-saga-item a img {
+            width: 24px;
             height: 24px;
             margin-right: 10px;
-            border-radius: 50%; /* Make icons circular */
+            border-radius: 50%;
             object-fit: cover;
             border: 1px solid #ffcc00;
         }
@@ -87,7 +86,7 @@
             transition: max-height 0.3s ease-out;
         }
         .nav-saga-item.expanded .nav-song-list {
-            max-height: 500px; /* Sufficiently large */
+            max-height: 500px;
         }
         .nav-song-item a {
             display: block;
@@ -110,10 +109,10 @@
 
         /* --- Menu Toggle Button --- */
         #menu-toggle {
-            position: fixed; /* Always fixed */
+            position: fixed;
             top: 15px;
-            left: 15px; /* Always on the far left */
-            z-index: 1001; /* Above sidebar */
+            left: 15px;
+            z-index: 1001;
             background-color: #007bff;
             color: white;
             border: none;
@@ -123,7 +122,7 @@
             font-size: 1.5em;
             line-height: 1;
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            transition: background-color 0.2s; /* Only background transition */
+            transition: background-color 0.2s;
         }
         #menu-toggle:hover {
             background-color: #0056b3;
@@ -131,11 +130,11 @@
 
         /* --- Main Content Area --- */
         .main-content {
-            flex-grow: 1; /* Allows it to take up available space */
+            flex-grow: 1;
             padding: 20px;
-            margin-left: 0; /* No margin-left, content does not shift */
-            width: 100%; /* Ensure it occupies full width */
-            box-sizing: border-box; /* Include padding in width */
+            margin-left: 0;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         /* Overlay to dim content when menu is open */
@@ -145,8 +144,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
-            z-index: 999; /* Below sidebar, above content */
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.3s ease, visibility 0.3s ease;
@@ -195,7 +194,7 @@
             margin-right: 15px;
             border-radius: 50%;
             object-fit: cover;
-            border: 2px solid #6a0dad;
+            border: 2px solid;
         }
         .saga-name {
             font-size: 2em;
@@ -213,6 +212,10 @@
             color: #333;
             margin-bottom: 8px;
             font-weight: bold;
+            /* Flexbox for title and inline link */
+            display: flex;
+            justify-content: space-between; /* Pushes link to the right */
+            align-items: center; /* Vertically aligns text and link */
         }
         .lyrics {
             white-space: pre-wrap;
@@ -223,6 +226,31 @@
             font-size: 0.95em;
             color: #555;
             border: 1px dashed #ccc;
+        }
+        .score-link { /* General styling for score links */
+            display: inline-block;
+            padding: 5px 10px;
+            background-color: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+        .score-link:hover {
+            background-color: #218838;
+        }
+        .tiny-score-link { /* Specific styling for the tiny link next to title */
+            font-size: 0.7em; /* Make it tiny */
+            padding: 3px 6px; /* Smaller padding */
+            background-color: #007bff; /* A distinct color for the tiny link */
+            color: white;
+            text-decoration: none;
+            border-radius: 3px;
+            margin-left: 10px; /* Space from the title */
+            flex-shrink: 0; /* Prevent it from shrinking */
+        }
+        .tiny-score-link:hover {
+            background-color: #0056b3;
         }
         #loading-message {
             text-align: center;
@@ -238,14 +266,19 @@
     <nav id="sidebar-nav" class="collapsed">
         <h2>Musical Index</h2>
         <ul id="nav-list">
-            </ul>
+            <!-- Navigation items will be injected here -->
+        </ul>
     </nav>
 
-    <div id="overlay"></div> <div class="main-content">
+    <div id="overlay"></div>
+
+    <div class="main-content">
         <div class="container">
-            <h1></h1> <div id="loading-message">Loading lyrics...</div>
+            <h1></h1>
+            <div id="loading-message">Loading musical data...</div>
             <div id="music-container">
-                </div>
+                <!-- Music content will be injected here by JavaScript -->
+            </div>
         </div>
     </div>
 
@@ -257,21 +290,25 @@
             const navList = document.getElementById('nav-list');
             const menuToggle = document.getElementById('menu-toggle');
             const sidebarNav = document.getElementById('sidebar-nav');
-            const overlay = document.getElementById('overlay'); // Get the new overlay element
+            const overlay = document.getElementById('overlay');
 
-            const filePath = 'epic.txt';
+            const epicFilePath = 'epic.txt';
+            const dataFilePath = 'data.json';
+
+            let appData = {
+                sagaColors: {},
+                songScores: {}
+            };
+            let musicalData = null; // Store parsed musical data globally
 
             // --- Menu Toggle Logic ---
             const toggleMenu = () => {
                 sidebarNav.classList.toggle('collapsed');
-                overlay.classList.toggle('active'); // Toggle overlay visibility
+                overlay.classList.toggle('active');
             };
 
             menuToggle.addEventListener('click', toggleMenu);
-            overlay.addEventListener('click', toggleMenu); // Close menu when clicking outside (on overlay)
-
-            // Initial state: sidebar starts collapsed (already set in HTML class)
-            // No need for body.sidebar-collapsed as content doesn't shift
+            overlay.addEventListener('click', toggleMenu);
 
             // Function to parse the plain text file
             function parseMusicalFile(text) {
@@ -334,17 +371,23 @@
                 return musical;
             }
 
-            // Helper to get a sanitized name for image lookup (based on your "second word" rule)
+            // Helper to get a sanitized name for image/color lookup
             function getSanitizedSagaName(sagaName) {
                 const words = sagaName.split(' ');
-                if (words.length >= 3) {
-                    return words[1]; // Returns the second word (index 1) for "The X Saga"
+                if (words.length >= 3 && words[0].toLowerCase() === 'the' && words[words.length - 1].toLowerCase() === 'saga') {
+                    return words[1];
                 }
-                // Fallback for names that don't fit the "The X Saga" pattern.
                 if (words.length >= 2 && words[words.length - 1].toLowerCase() === 'saga') {
-                    return words[0]; // If "Circe Saga", returns "Circe"
+                    return words[0];
                 }
-                return sagaName; // Returns original name if no specific pattern matches
+                return sagaName;
+            }
+
+            // Function to update the body background color based on the active saga
+            function updateBodyBackground(activeSagaName) {
+                const sanitizedSagaName = getSanitizedSagaName(activeSagaName);
+                const color = appData.sagaColors[sanitizedSagaName] || '#f4f4f4'; // Fallback to default
+                document.body.style.backgroundColor = color;
             }
 
             // Function to display the parsed data on the webpage and build navigation
@@ -359,25 +402,31 @@
 
                 musicalData.sagas.forEach((saga, sagaIndex) => {
                     const sanitizedSagaName = getSanitizedSagaName(saga.name);
-                    const iconPath = `icons/${sanitizedSagaName}.jpg`; // Assumes .jpg extension
+                    const iconPath = `icons/${sanitizedSagaName}.jpg`;
+                    const sagaColor = appData.sagaColors[sanitizedSagaName] || '#6a0dad';
 
                     // --- Main Content Elements ---
                     const sagaDiv = document.createElement('div');
                     sagaDiv.classList.add('saga');
                     sagaDiv.id = `saga-${sagaIndex}`;
+                    sagaDiv.style.borderColor = sagaColor;
+                    sagaDiv.style.backgroundColor = sagaColor + '10';
 
                     const sagaHeader = document.createElement('div');
                     sagaHeader.classList.add('saga-header');
+                    sagaHeader.style.borderBottomColor = sagaColor + '80';
 
                     const sagaIconMain = document.createElement('img');
                     sagaIconMain.src = iconPath;
                     sagaIconMain.alt = `${saga.name} icon`;
-                    sagaIconMain.onerror = () => { sagaIconMain.style.display = 'none'; }; // Hide if image not found
+                    sagaIconMain.onerror = () => { sagaIconMain.style.display = 'none'; };
+                    sagaIconMain.style.borderColor = sagaColor;
                     sagaHeader.appendChild(sagaIconMain);
 
                     const sagaNameElem = document.createElement('h2');
                     sagaNameElem.classList.add('saga-name');
                     sagaNameElem.textContent = saga.name;
+                    sagaNameElem.style.color = sagaColor;
                     sagaHeader.appendChild(sagaNameElem);
                     sagaDiv.appendChild(sagaHeader);
 
@@ -391,7 +440,8 @@
                     const navSagaIcon = document.createElement('img');
                     navSagaIcon.src = iconPath;
                     navSagaIcon.alt = `${saga.name} icon`;
-                    navSagaIcon.onerror = () => { navSagaIcon.style.display = 'none'; }; // Hide if image not found
+                    navSagaIcon.onerror = () => { navSagaIcon.style.display = 'none'; };
+                    navSagaIcon.style.borderColor = sagaColor;
                     navSagaLink.appendChild(navSagaIcon);
 
                     const navSagaText = document.createElement('span');
@@ -404,20 +454,18 @@
                     navSongUl.classList.add('nav-song-list');
                     navSagaLi.appendChild(navSongUl);
 
-                    // Add click listener to toggle song list and scroll
                     navSagaLink.addEventListener('click', (e) => {
                         e.preventDefault();
                         const targetId = e.target.closest('a').getAttribute('href').substring(1);
                         document.getElementById(targetId).scrollIntoView({ behavior: 'smooth' });
-
                         navSagaLi.classList.toggle('expanded');
-
-                        // Collapse other sagas when one is expanded
                         document.querySelectorAll('.nav-saga-item').forEach(item => {
                             if (item !== navSagaLi) {
                                 item.classList.remove('expanded');
                             }
                         });
+                        // Update background immediately on menu click
+                        updateBodyBackground(saga.name);
                     });
 
 
@@ -426,11 +474,28 @@
                         const songDiv = document.createElement('div');
                         songDiv.classList.add('song');
                         songDiv.id = `song-${sagaIndex}-${songIndex}`;
+                        songDiv.style.borderLeftColor = sagaColor;
 
                         const songNameElem = document.createElement('h3');
                         songNameElem.classList.add('song-name');
-                        songNameElem.textContent = song.name;
-                        songDiv.appendChild(songNameElem);
+                        // Do NOT set textContent here, we'll append text and link separately
+                        
+                        const songTitleText = document.createElement('span');
+                        songTitleText.textContent = song.name;
+                        songNameElem.appendChild(songTitleText);
+
+                        // Add tiny music score link if available
+                        const scorePath = appData.songScores[saga.name] ? appData.songScores[saga.name][song.name] : null;
+                        if (scorePath) {
+                            const tinyScoreLink = document.createElement('a');
+                            tinyScoreLink.href = scorePath;
+                            tinyScoreLink.textContent = '[Score]'; // Tiny text for the link
+                            tinyScoreLink.classList.add('tiny-score-link');
+                            tinyScoreLink.target = '_blank'; // Open in new tab
+                            songNameElem.appendChild(tinyScoreLink);
+                        }
+
+                        songDiv.appendChild(songNameElem); // Append the h3 with title and link
 
                         const lyricsElem = document.createElement('pre');
                         lyricsElem.classList.add('lyrics');
@@ -448,14 +513,13 @@
                         navSongLi.appendChild(navSongLink);
                         navSongUl.appendChild(navSongLi);
 
-                        // Add click listener to scroll to song and close menu
                         navSongLink.addEventListener('click', (e) => {
                             e.preventDefault();
                             const targetId = e.target.getAttribute('href').substring(1);
                             document.getElementById(targetId).scrollIntoView({ behavior: 'smooth' });
-                            
-                            // Collapse sidebar and hide overlay after clicking a song link
-                            toggleMenu(); // Use the common toggle function
+                            toggleMenu();
+                            // Update background when navigating to a song via menu
+                            updateBodyBackground(saga.name);
                         });
                     });
 
@@ -463,7 +527,12 @@
                     navList.appendChild(navSagaLi);
                 });
 
-                // --- Scroll Listener for Active Link Highlighting ---
+                // Initial background color set for the first saga
+                if (musicalData.sagas.length > 0) {
+                    updateBodyBackground(musicalData.sagas[0].name);
+                }
+
+                // --- Scroll Listener for Active Link Highlighting and Background Change ---
                 window.addEventListener('scroll', () => {
                     const sagas = document.querySelectorAll('.saga');
                     const songs = document.querySelectorAll('.song');
@@ -472,15 +541,23 @@
 
                     let activeSectionId = '';
                     let activeSongId = '';
+                    let activeSagaNameForBackground = '';
 
                     // Prioritize song highlighting
                     let foundActiveSong = false;
                     for (let i = songs.length - 1; i >= 0; i--) {
                         const song = songs[i];
                         const rect = song.getBoundingClientRect();
+                        // Consider a song active if its top is within 1/3rd of viewport height from top
                         if (rect.top <= window.innerHeight / 3 && rect.bottom > window.innerHeight / 3) {
                             activeSongId = song.id;
                             foundActiveSong = true;
+                            // Find the parent saga for this song to get its name for background
+                            const parentSagaDiv = song.closest('.saga');
+                            if (parentSagaDiv) {
+                                const sagaIndex = parseInt(parentSagaDiv.id.replace('saga-', ''));
+                                activeSagaNameForBackground = musicalData.sagas[sagaIndex].name;
+                            }
                             break;
                         }
                     }
@@ -489,12 +566,23 @@
                          for (let i = sagas.length - 1; i >= 0; i--) {
                             const saga = sagas[i];
                             const rect = saga.getBoundingClientRect();
+                            // Consider a saga active if its top is within 1/3rd of viewport height from top
                             if (rect.top <= window.innerHeight / 3 && rect.bottom > window.innerHeight / 3) {
                                 activeSectionId = saga.id;
+                                activeSagaNameForBackground = musicalData.sagas[i].name;
                                 break;
                             }
                         }
                     }
+                    
+                    // Update body background
+                    if (activeSagaNameForBackground) {
+                        updateBodyBackground(activeSagaNameForBackground);
+                    } else {
+                        // Fallback if no saga is active (e.g., at very top of page before first saga)
+                        document.body.style.backgroundColor = '#f4f4f4';
+                    }
+
 
                     navSagaLinks.forEach(link => link.classList.remove('active'));
                     navSongLinks.forEach(link => link.classList.remove('active'));
@@ -523,7 +611,6 @@
                         }
                     }
 
-                    // Collapse any non-active sagas
                     document.querySelectorAll('.nav-saga-item').forEach(item => {
                         const sagaLink = item.querySelector('.nav-saga-item > a');
                         const isActiveOrAncestor = sagaLink.classList.contains('active') || item.querySelector('.nav-song-item a.active');
@@ -534,23 +621,31 @@
                 });
             }
 
-            // Fetch the text file and then process it
-            fetch(filePath)
-                .then(response => {
+            // Fetch both files and then process them
+            Promise.all([
+                fetch(epicFilePath).then(response => {
                     if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status} - Could not load ${filePath}. Please ensure the file exists and a local server is running if viewing locally. Check console for details.`);
+                        throw new Error(`HTTP error! status: ${response.status} - Could not load ${epicFilePath}. Please ensure the file exists and a local server is running if viewing locally. Check console for details.`);
                     }
                     return response.text();
+                }),
+                fetch(dataFilePath).then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status} - Could not load ${dataFilePath}.`);
+                    }
+                    return response.json();
                 })
-                .then(text => {
-                    const musicalData = parseMusicalFile(text);
-                    displayMusic(musicalData);
-                })
-                .catch(error => {
-                    console.error('Error fetching or parsing musical data:', error);
-                    loadingMessage.textContent = `Failed to load musical data: ${error.message}. Please ensure the file 'epic.txt' exists in the same directory as 'index.html', and that you are running a local web server (e.g., using Python's http.server).`;
-                    loadingMessage.style.color = 'red';
-                });
+            ])
+            .then(([epicText, jsonData]) => {
+                appData = jsonData;
+                musicalData = parseMusicalFile(epicText); // Store parsed data
+                displayMusic(musicalData);
+            })
+            .catch(error => {
+                console.error('Error fetching or parsing data:', error);
+                loadingMessage.textContent = `Failed to load musical data: ${error.message}. Please ensure all required files (epic.txt, data.json, icons folder) exist and a local server is running.`;
+                loadingMessage.style.color = 'red';
+            });
         });
     </script>
 </body>
