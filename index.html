@@ -328,10 +328,9 @@
 
     <nav id="sidebar-nav" class="collapsed">
         <h2>Musical Index</h2>
-        <button id="random-song-btn">Jump to Random Song</button>
+        <button id="random-song-btn">Random 🎲</button>
         <ul id="nav-list">
-            <!-- Navigation items will be injected here -->
-        </ul>
+            </ul>
     </nav>
 
     <div id="overlay"></div>
@@ -348,8 +347,7 @@
             </div>
 
             <div id="music-container">
-                <!-- Music content will be injected here by JavaScript -->
-            </div>
+                </div>
         </div>
     </div>
 
@@ -364,7 +362,7 @@
             const overlay = document.getElementById('overlay');
             const searchInput = document.getElementById('search-input');
             const clearSearchBtn = document.getElementById('clear-search-btn');
-            const randomSongBtn = document.getElementById('random-song-btn'); // New button
+            const randomSongBtn = document.getElementById('random-song-btn');
 
             const epicFilePath = 'epic.txt';
             const dataFilePath = 'data.json';
@@ -376,7 +374,7 @@
             let musicalData = null; // Store parsed musical data globally
             let allSongElements = []; // To store references to all song divs for random jump
 
-            // --- Menu Toggle Logic ---
+            // --- Menu Toggle Logic (for the entire sidebar) ---
             const toggleMenu = () => {
                 sidebarNav.classList.toggle('collapsed');
                 overlay.classList.toggle('active');
@@ -424,8 +422,8 @@
                     window.removeEventListener('scroll', handleScroll);
                     // Remove active classes from all nav links when search is active
                     navList.querySelectorAll('a').forEach(link => link.classList.remove('active'));
-                    // Collapse all saga lists in nav during search
-                    navList.querySelectorAll('.nav-saga-item').forEach(item => item.classList.remove('expanded'));
+                    // Auto-expand all saga lists in nav during search
+                    navList.querySelectorAll('.nav-saga-item').forEach(item => item.classList.add('expanded'));
                 } else {
                     window.addEventListener('scroll', handleScroll);
                     handleScroll(); // Re-apply current saga color and active nav state
@@ -450,15 +448,16 @@
                         }
                     });
 
-                    // Show/hide saga nav item and expand it if it has visible songs
+                    // Show/hide saga nav item
                     if (query && sagaHasVisibleNavSongs) {
                         sagaItem.style.display = 'block';
                         sagaItem.classList.add('expanded'); // Auto-expand during search
                     } else if (query && !sagaHasVisibleNavSongs) {
                         sagaItem.style.display = 'none';
-                    } else { // No query, show all and collapse
+                    } else { // No query, show all and revert to non-expanded (default)
                         sagaItem.style.display = 'block';
-                        sagaItem.classList.remove('expanded');
+                        // Keep saga expanded/collapsed based on user click if no search
+                        // Don't remove expanded class here unless it was previously expanded by search
                     }
                 });
             };
@@ -485,21 +484,30 @@
                     
                     randomSongDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-                    // Find the saga name for the random song to update background
+                    // Find the parent saga for the random song to update background and nav link
                     const parentSagaDiv = randomSongDiv.closest('.saga');
                     if (parentSagaDiv) {
                         const sagaIndex = parseInt(parentSagaDiv.id.replace('saga-', ''));
                         const sagaName = musicalData.sagas[sagaIndex].name;
                         updateBodyBackground(sagaName);
+
+                        // Manually set active states for the random song's saga and song link
+                        navList.querySelectorAll('a').forEach(link => link.classList.remove('active'));
+                        navList.querySelectorAll('.nav-saga-item').forEach(item => item.classList.remove('expanded'));
+
+                        const navSongLink = document.querySelector(`.nav-song-item a[href="#${randomSongDiv.id}"]`);
+                        if (navSongLink) {
+                            navSongLink.classList.add('active');
+                            const parentNavSagaItem = navSongLink.closest('.nav-saga-item');
+                            if (parentNavSagaItem) {
+                                parentNavSagaItem.classList.add('expanded');
+                                parentNavSagaItem.querySelector('.nav-saga-item > a').classList.add('active');
+                            }
+                        }
                     }
 
                     // Close the menu after jumping to a random song
                     toggleMenu();
-
-                    // Update active navigation link for the random song
-                    // This will be handled by handleScroll after the smooth scroll finishes
-                    // For immediate visual feedback, you could try to manually set active class
-                    // but handleScroll is more reliable after scroll completes.
                 }
             });
 
@@ -654,21 +662,25 @@
                     navSongUl.classList.add('nav-song-list');
                     navSagaLi.appendChild(navSongUl);
 
+                    // Saga navigation link click listener: Only toggle expanded state
                     navSagaLink.addEventListener('click', (e) => {
                         e.preventDefault();
                         const targetId = e.target.closest('a').getAttribute('href').substring(1);
                         document.getElementById(targetId).scrollIntoView({ behavior: 'smooth' });
-                        // Toggle expanded state only if clicking the saga link itself
+                        
+                        // Toggle expanded state for THIS saga
                         navSagaLi.classList.toggle('expanded');
-                        // Collapse other sagas
+                        
+                        // Collapse other sagas if this one is expanding or staying expanded
                         document.querySelectorAll('.nav-saga-item').forEach(item => {
                             if (item !== navSagaLi) {
                                 item.classList.remove('expanded');
                             }
                         });
+                        
                         // Update background immediately on menu click
                         updateBodyBackground(saga.name);
-                        // Do NOT close the menu here, let user navigate
+                        // Do NOT close the entire menu here
                     });
 
 
@@ -696,7 +708,15 @@
                             tinyScoreLink.target = '_blank'; // Open in new tab
                             songNameElem.appendChild(tinyScoreLink);
                         } else {
-                            console.warn(`No score path found for song: "${song.name}" in saga: "${saga.name}". Check data.json.`);
+                            // Only warn if the saga and song exist in the appData.songScores structure
+                            // but the specific song entry is missing or null.
+                            if (appData.songScores[saga.name] && Object.prototype.hasOwnProperty.call(appData.songScores[saga.name], song.name)) {
+                                console.warn(`Score path is null/undefined for song: "${song.name}" in saga: "${saga.name}". Check data.json entry.`);
+                            } else {
+                                // This means the song or saga itself isn't listed in songScores
+                                // (which is fine if no score exists for it).
+                                // console.log(`No score entry for song: "${song.name}" in saga: "${saga.name}".`);
+                            }
                         }
 
                         songDiv.appendChild(songNameElem); // Append the h3 with title and link
@@ -718,13 +738,22 @@
                         navSongLi.appendChild(navSongLink);
                         navSongUl.appendChild(navSongLi);
 
+                        // Song navigation link click listener: Scroll to song, update background, do NOT close menu
                         navSongLink.addEventListener('click', (e) => {
                             e.preventDefault();
                             const targetId = e.target.getAttribute('href').substring(1);
                             document.getElementById(targetId).scrollIntoView({ behavior: 'smooth' });
-                            // Do NOT close the menu here
                             // Update background when navigating to a song via menu
                             updateBodyBackground(saga.name);
+
+                            // Set active class for the clicked song and its parent saga
+                            navList.querySelectorAll('a').forEach(link => link.classList.remove('active'));
+                            e.target.classList.add('active');
+                            const parentSagaLi = e.target.closest('.nav-saga-item');
+                            if (parentSagaLi) {
+                                parentSagaLi.querySelector('.nav-saga-item > a').classList.add('active');
+                            }
+                            // Do NOT close the menu here
                         });
                     });
 
@@ -737,15 +766,19 @@
                     updateBodyBackground(musicalData.sagas[0].name);
                 }
 
-                // --- Scroll Listener for Active Link Highlighting and Background Change ---
+                // --- Scroll Listener for Active Link Highlighting and Background Change (NO MENU EXPANSION) ---
                 // Store the scroll handler in a variable so we can add/remove it
                 const handleScroll = () => {
+                    // Only update active links if search input is empty
+                    if (searchInput.value !== '') {
+                        return; // Exit if search is active
+                    }
+
                     const sagas = document.querySelectorAll('.saga');
                     const songs = document.querySelectorAll('.song');
                     const navSagaLinks = document.querySelectorAll('.nav-saga-item > a');
                     const navSongLinks = document.querySelectorAll('.nav-song-item a');
 
-                    let activeSectionId = '';
                     let activeSongId = '';
                     let activeSagaNameForBackground = '';
 
@@ -767,14 +800,14 @@
                             break;
                         }
                     }
-
+                    
+                    // If no specific song is active, find the active saga
                     if (!foundActiveSong) {
                          for (let i = sagas.length - 1; i >= 0; i--) {
                             const saga = sagas[i];
                             const rect = saga.getBoundingClientRect();
                             // Consider a saga active if its top is within 1/3rd of viewport height from top
                             if (rect.top <= window.innerHeight / 3 && rect.bottom > window.innerHeight / 3) {
-                                activeSectionId = saga.id;
                                 activeSagaNameForBackground = musicalData.sagas[i].name;
                                 break;
                             }
@@ -789,46 +822,35 @@
                         document.body.style.backgroundColor = '#f4f4f4';
                     }
 
-                    // Only update active links if search input is empty
-                    if (searchInput.value === '') {
-                        navSagaLinks.forEach(link => link.classList.remove('active'));
-                        navSongLinks.forEach(link => link.classList.remove('active'));
+                    // Remove all active classes first
+                    navSagaLinks.forEach(link => link.classList.remove('active'));
+                    navSongLinks.forEach(link => link.classList.remove('active'));
 
-                        if (activeSongId) {
-                            const activeLink = document.querySelector(`.nav-song-item a[href="#${activeSongId}"]`);
-                            if (activeLink) {
-                                activeLink.classList.add('active');
-                                const parentSagaLi = activeLink.closest('.nav-saga-item');
-                                if (parentSagaLi) {
-                                    parentSagaLi.classList.add('expanded');
-                                    const parentSagaLink = parentSagaLi.querySelector('.nav-saga-item > a');
-                                    if (parentSagaLink) {
-                                        parentSagaLink.classList.add('active');
-                                    }
-                                }
-                            }
-                        } else if (activeSectionId) {
-                            const activeLink = document.querySelector(`.nav-saga-item a[href="#${activeSectionId}"]`);
-                            if (activeLink) {
-                                activeLink.classList.add('active');
-                                const parentSagaLi = activeLink.closest('.nav-saga-item');
-                                if (parentSagaLi) {
-                                    parentSagaLi.classList.add('expanded');
-                                }
+                    // Set active classes based on scroll position
+                    if (activeSongId) {
+                        const activeLink = document.querySelector(`.nav-song-item a[href="#${activeSongId}"]`);
+                        if (activeLink) {
+                            activeLink.classList.add('active');
+                            const parentSagaLi = activeLink.closest('.nav-saga-item');
+                            if (parentSagaLi) {
+                                // Set the saga link active too if its child song is active
+                                parentSagaLi.querySelector('.nav-saga-item > a').classList.add('active');
+                                // DO NOT modify `expanded` class here due to scrolling
                             }
                         }
-
-                        document.querySelectorAll('.nav-saga-item').forEach(item => {
-                            const sagaLink = item.querySelector('.nav-saga-item > a');
-                            const isActiveOrAncestor = sagaLink.classList.contains('active') || item.querySelector('.nav-song-item a.active');
-                            if (!isActiveOrAncestor) {
-                                // Only collapse if it's not the active saga or an ancestor of an active song
-                                // And it's not being actively expanded by a click
-                                if (!item.classList.contains('expanded')) { // Prevent collapsing if user just clicked to expand
-                                    item.classList.remove('expanded');
-                                }
-                            }
+                    } else if (activeSagaNameForBackground) { // If no song, but a saga is active
+                        const sagaElements = Array.from(document.querySelectorAll('.saga'));
+                        const activeSagaDiv = sagaElements.find(sagaDiv => {
+                            const sagaIndex = parseInt(sagaDiv.id.replace('saga-', ''));
+                            return musicalData.sagas[sagaIndex].name === activeSagaNameForBackground;
                         });
+                        if (activeSagaDiv) {
+                            const activeNavSagaLink = document.querySelector(`.nav-saga-item a[href="#${activeSagaDiv.id}"]`);
+                            if (activeNavSagaLink) {
+                                activeNavSagaLink.classList.add('active');
+                                // DO NOT modify `expanded` class here due to scrolling
+                            }
+                        }
                     }
                 };
 
