@@ -258,6 +258,43 @@
             color: #007bff;
             margin-top: 50px;
         }
+
+        /* --- Search Bar Styling --- */
+        #search-container {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            background-color: #e9ecef;
+            align-items: center;
+        }
+        #search-input {
+            flex-grow: 1;
+            padding: 10px 15px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            font-size: 1em;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        #search-input:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+        #clear-search-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.2s;
+        }
+        #clear-search-btn:hover {
+            background-color: #c82333;
+        }
     </style>
 </head>
 <body>
@@ -266,8 +303,7 @@
     <nav id="sidebar-nav" class="collapsed">
         <h2>Musical Index</h2>
         <ul id="nav-list">
-            <!-- Navigation items will be injected here -->
-        </ul>
+            </ul>
     </nav>
 
     <div id="overlay"></div>
@@ -275,10 +311,16 @@
     <div class="main-content">
         <div class="container">
             <h1></h1>
+
             <div id="loading-message">Loading musical data...</div>
-            <div id="music-container">
-                <!-- Music content will be injected here by JavaScript -->
+            
+            <div id="search-container">
+                <input type="text" id="search-input" placeholder="Search lyrics or song titles...">
+                <button id="clear-search-btn">Clear</button>
             </div>
+
+            <div id="music-container">
+                </div>
         </div>
     </div>
 
@@ -291,6 +333,8 @@
             const menuToggle = document.getElementById('menu-toggle');
             const sidebarNav = document.getElementById('sidebar-nav');
             const overlay = document.getElementById('overlay');
+            const searchInput = document.getElementById('search-input');
+            const clearSearchBtn = document.getElementById('clear-search-btn');
 
             const epicFilePath = 'epic.txt';
             const dataFilePath = 'data.json';
@@ -309,6 +353,105 @@
 
             menuToggle.addEventListener('click', toggleMenu);
             overlay.addEventListener('click', toggleMenu);
+
+            // --- Search Logic ---
+            let searchTimeout;
+            const filterSongs = (query) => {
+                const lowerCaseQuery = query.toLowerCase().trim();
+                const allSongs = musicContainer.querySelectorAll('.song');
+                const allSagas = musicContainer.querySelectorAll('.saga');
+                let foundMatch = false;
+
+                allSongs.forEach(songDiv => {
+                    const songName = songDiv.querySelector('.song-name span').textContent.toLowerCase();
+                    const lyrics = songDiv.querySelector('.lyrics').textContent.toLowerCase();
+
+                    // Check if query is in song name or lyrics
+                    if (songName.includes(lowerCaseQuery) || lyrics.includes(lowerCaseQuery)) {
+                        songDiv.style.display = 'block'; // Show song
+                        foundMatch = true;
+                    } else {
+                        songDiv.style.display = 'none'; // Hide song
+                    }
+                });
+
+                // Show/hide sagas based on whether they contain visible songs
+                allSagas.forEach(sagaDiv => {
+                    const songsInSaga = sagaDiv.querySelectorAll('.song');
+                    let sagaHasVisibleSongs = false;
+                    songsInSaga.forEach(song => {
+                        if (song.style.display !== 'none') {
+                            sagaHasVisibleSongs = true;
+                        }
+                    });
+                    sagaDiv.style.display = sagaHasVisibleSongs ? 'flex' : 'none'; // Use flex as saga is a flex container
+                });
+
+                // Update navigation visibility
+                updateNavBasedOnSearch(lowerCaseQuery);
+
+                // If search is active, disable scroll-based background color
+                if (lowerCaseQuery) {
+                    window.removeEventListener('scroll', handleScroll);
+                } else {
+                    window.addEventListener('scroll', handleScroll);
+                    handleScroll(); // Re-apply current saga color
+                }
+            };
+
+            const updateNavBasedOnSearch = (query) => {
+                const navSagaItems = navList.querySelectorAll('.nav-saga-item');
+
+                navSagaItems.forEach(sagaItem => {
+                    const navSongList = sagaItem.querySelector('.nav-song-list');
+                    const navSongItems = navSongList.querySelectorAll('.nav-song-item');
+                    let sagaHasVisibleNavSongs = false;
+
+                    navSongItems.forEach(songItem => {
+                        const songName = songItem.querySelector('a').textContent.toLowerCase();
+                        if (songName.includes(query)) {
+                            songItem.style.display = 'block';
+                            sagaHasVisibleNavSongs = true;
+                        } else {
+                            songItem.style.display = 'none';
+                        }
+                    });
+
+                    // Show/hide saga nav item and expand it if it has visible songs
+                    if (query && sagaHasVisibleNavSongs) {
+                        sagaItem.style.display = 'block';
+                        sagaItem.classList.add('expanded'); // Auto-expand during search
+                    } else if (query && !sagaHasVisibleNavSongs) {
+                        sagaItem.style.display = 'none';
+                    } else { // No query, show all and collapse
+                        sagaItem.style.display = 'block';
+                        sagaItem.classList.remove('expanded');
+                    }
+                });
+
+                // After filtering, ensure correct scroll listener is active or not
+                if (query) {
+                    // When a query is active, remove active classes from nav
+                    navList.querySelectorAll('a').forEach(link => link.classList.remove('active'));
+                } else {
+                    // When search is cleared, re-trigger scroll to set active and background
+                    handleScroll();
+                }
+            };
+
+
+            // Event listeners for search input
+            searchInput.addEventListener('input', () => {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    filterSongs(searchInput.value);
+                }, 300); // Debounce to prevent excessive filtering
+            });
+
+            clearSearchBtn.addEventListener('click', () => {
+                searchInput.value = '';
+                filterSongs(''); // Clear the filter
+            });
 
             // Function to parse the plain text file
             function parseMusicalFile(text) {
@@ -466,6 +609,8 @@
                         });
                         // Update background immediately on menu click
                         updateBodyBackground(saga.name);
+                        // Close menu after clicking a saga in nav
+                        toggleMenu();
                     });
 
 
@@ -478,7 +623,6 @@
 
                         const songNameElem = document.createElement('h3');
                         songNameElem.classList.add('song-name');
-                        // Do NOT set textContent here, we'll append text and link separately
                         
                         const songTitleText = document.createElement('span');
                         songTitleText.textContent = song.name;
@@ -489,7 +633,7 @@
                         if (scorePath) {
                             const tinyScoreLink = document.createElement('a');
                             tinyScoreLink.href = scorePath;
-                            tinyScoreLink.textContent = '[Score]'; // Tiny text for the link
+                            tinyScoreLink.textContent = '[Score]';
                             tinyScoreLink.classList.add('tiny-score-link');
                             tinyScoreLink.target = '_blank'; // Open in new tab
                             songNameElem.appendChild(tinyScoreLink);
@@ -533,7 +677,8 @@
                 }
 
                 // --- Scroll Listener for Active Link Highlighting and Background Change ---
-                window.addEventListener('scroll', () => {
+                // Store the scroll handler in a variable so we can add/remove it
+                const handleScroll = () => {
                     const sagas = document.querySelectorAll('.saga');
                     const songs = document.querySelectorAll('.song');
                     const navSagaLinks = document.querySelectorAll('.nav-saga-item > a');
@@ -583,42 +728,47 @@
                         document.body.style.backgroundColor = '#f4f4f4';
                     }
 
+                    // Only update active links if search input is empty
+                    if (searchInput.value === '') {
+                        navSagaLinks.forEach(link => link.classList.remove('active'));
+                        navSongLinks.forEach(link => link.classList.remove('active'));
 
-                    navSagaLinks.forEach(link => link.classList.remove('active'));
-                    navSongLinks.forEach(link => link.classList.remove('active'));
-
-                    if (activeSongId) {
-                        const activeLink = document.querySelector(`.nav-song-item a[href="#${activeSongId}"]`);
-                        if (activeLink) {
-                            activeLink.classList.add('active');
-                            const parentSagaLi = activeLink.closest('.nav-saga-item');
-                            if (parentSagaLi) {
-                                parentSagaLi.classList.add('expanded');
-                                const parentSagaLink = parentSagaLi.querySelector('.nav-saga-item > a');
-                                if (parentSagaLink) {
-                                    parentSagaLink.classList.add('active');
+                        if (activeSongId) {
+                            const activeLink = document.querySelector(`.nav-song-item a[href="#${activeSongId}"]`);
+                            if (activeLink) {
+                                activeLink.classList.add('active');
+                                const parentSagaLi = activeLink.closest('.nav-saga-item');
+                                if (parentSagaLi) {
+                                    parentSagaLi.classList.add('expanded');
+                                    const parentSagaLink = parentSagaLi.querySelector('.nav-saga-item > a');
+                                    if (parentSagaLink) {
+                                        parentSagaLink.classList.add('active');
+                                    }
+                                }
+                            }
+                        } else if (activeSectionId) {
+                            const activeLink = document.querySelector(`.nav-saga-item a[href="#${activeSectionId}"]`);
+                            if (activeLink) {
+                                activeLink.classList.add('active');
+                                const parentSagaLi = activeLink.closest('.nav-saga-item');
+                                if (parentSagaLi) {
+                                    parentSagaLi.classList.add('expanded');
                                 }
                             }
                         }
-                    } else if (activeSectionId) {
-                        const activeLink = document.querySelector(`.nav-saga-item a[href="#${activeSectionId}"]`);
-                        if (activeLink) {
-                            activeLink.classList.add('active');
-                            const parentSagaLi = activeLink.closest('.nav-saga-item');
-                            if (parentSagaLi) {
-                                parentSagaLi.classList.add('expanded');
-                            }
-                        }
-                    }
 
-                    document.querySelectorAll('.nav-saga-item').forEach(item => {
-                        const sagaLink = item.querySelector('.nav-saga-item > a');
-                        const isActiveOrAncestor = sagaLink.classList.contains('active') || item.querySelector('.nav-song-item a.active');
-                        if (!isActiveOrAncestor) {
-                            item.classList.remove('expanded');
-                        }
-                    });
-                });
+                        document.querySelectorAll('.nav-saga-item').forEach(item => {
+                            const sagaLink = item.querySelector('.nav-saga-item > a');
+                            const isActiveOrAncestor = sagaLink.classList.contains('active') || item.querySelector('.nav-song-item a.active');
+                            if (!isActiveOrAncestor) {
+                                item.classList.remove('expanded');
+                            }
+                        });
+                    }
+                };
+
+                // Attach scroll listener
+                window.addEventListener('scroll', handleScroll);
             }
 
             // Fetch both files and then process them
@@ -640,6 +790,7 @@
                 appData = jsonData;
                 musicalData = parseMusicalFile(epicText); // Store parsed data
                 displayMusic(musicalData);
+                handleScroll(); // Call once after content is loaded to set initial active state and background
             })
             .catch(error => {
                 console.error('Error fetching or parsing data:', error);
