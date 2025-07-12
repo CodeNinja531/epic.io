@@ -4,15 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Epic: The Musical</title>
+    
     <style>
+        /* Base styles */
         body {
             font-family: Arial, sans-serif;
             line-height: 1.6;
             margin: 0;
-            background-color: #f4f4f4; /* Default fallback background */
+            background-color: #f4f4f4;
             color: #333;
             overflow-x: hidden;
-            transition: background-color 0.5s ease; /* Smooth transition for background */
+        }
+
+        /* Headings reverted to default font */
+        h1, .saga-name {
+            font-family: Arial, sans-serif;
+            text-transform: uppercase;
         }
 
         /* --- Sidebar Navigation --- */
@@ -30,7 +37,8 @@
             transform: translateX(-100%);
             transition: transform 0.3s ease;
             z-index: 1000;
-            padding-bottom: calc(20px + env(safe-area-inset-bottom)); /* Add extra padding for safe area */
+            /* Re-add padding for mobile safe areas */
+            padding-bottom: calc(20px + env(safe-area-inset-bottom));
             scroll-padding-bottom: env(safe-area-inset-bottom);
         }
         #sidebar-nav:not(.collapsed) {
@@ -63,6 +71,7 @@
             background-color: #555;
             margin-bottom: 5px;
             border-radius: 4px;
+            transition: background-color 0.2s ease, color 0.2s ease;
         }
         .nav-saga-item a:hover {
             background-color: #777;
@@ -88,7 +97,7 @@
             transition: max-height 0.3s ease-out;
         }
         .nav-saga-item.expanded .nav-song-list {
-            max-height: 500px; /* Adjust as needed for max songs in a saga */
+            max-height: 500px;
         }
         .nav-song-item a {
             display: block;
@@ -98,15 +107,18 @@
             font-size: 0.9em;
             border-left: 3px solid #777;
             margin-left: 5px;
+            transition: background-color 0.2s ease, color 0.2s ease, border-left-color 0.2s ease;
         }
         .nav-song-item a:hover {
             color: #fff;
             background-color: #444;
+            border-left-color: #fff;
         }
         .nav-song-item a.active {
             color: #ffcc00;
             font-weight: bold;
             background-color: #444;
+            border-left-color: #ffcc00;
         }
 
         /* --- Menu Toggle Button --- */
@@ -124,7 +136,7 @@
             font-size: 1.5em;
             line-height: 1;
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            transition: background-color 0.2s;
+            transition: none;
         }
         #menu-toggle:hover {
             background-color: #0056b3;
@@ -137,6 +149,11 @@
             margin-left: 0;
             width: 100%;
             box-sizing: border-box;
+            transition: margin-left 0.3s ease;
+        }
+        /* Re-add: margin shift for main content when sidebar is open */
+        body:has(#sidebar-nav:not(.collapsed)) .main-content {
+            margin-left: 250px;
         }
 
         /* Overlay to dim content when menu is open */
@@ -157,8 +174,7 @@
             visibility: visible;
         }
 
-
-        /* Remaining styles are unchanged */
+        /* Main container for content */
         .container {
             max-width: 900px;
             margin: auto;
@@ -208,17 +224,31 @@
             margin-bottom: 20px;
             padding-left: 15px;
             border-left: 3px solid #8a2be2;
+            transition: none;
         }
+
+        .song.active {
+            background-color: transparent;
+            border-left: 3px solid #8a2be2;
+            box-shadow: none;
+            padding: 0 0 0 15px;
+        }
+
         .song-name {
             font-size: 1.5em;
             color: #333;
             margin-bottom: 8px;
             font-weight: bold;
-            /* Flexbox for title and inline link */
             display: flex;
-            justify-content: space-between; /* Pushes link to the right */
-            align-items: center; /* Vertically aligns text and link */
+            justify-content: space-between;
+            align-items: center;
+            transition: none;
         }
+        .song:hover .song-name {
+            color: #333;
+            transform: none;
+        }
+
         .lyrics {
             white-space: pre-wrap;
             background-color: #f9f9f9;
@@ -229,7 +259,7 @@
             color: #555;
             border: 1px dashed #ccc;
         }
-        .score-link { /* General styling for score links - not used for tiny link */
+        .score-link {
             display: inline-block;
             padding: 5px 10px;
             background-color: #28a745;
@@ -241,19 +271,26 @@
         .score-link:hover {
             background-color: #218838;
         }
-        .tiny-score-link { /* Specific styling for the tiny link next to title */
-            font-size: 0.7em; /* Make it tiny */
-            padding: 3px 6px; /* Smaller padding */
-            background-color: #007bff; /* A distinct color for the tiny link */
+        .tiny-score-link {
+            font-size: 0.7em;
+            padding: 3px 6px;
+            background-color: #007bff;
             color: white;
             text-decoration: none;
             border-radius: 3px;
-            margin-left: 10px; /* Space from the title */
-            flex-shrink: 0; /* Prevent it from shrinking */
+            margin-left: 10px;
+            flex-shrink: 0;
+            transition: none;
+            opacity: 1;
         }
         .tiny-score-link:hover {
             background-color: #0056b3;
+            opacity: 1;
         }
+        .song:hover .tiny-score-link {
+            opacity: 1;
+        }
+
         #loading-message {
             text-align: center;
             font-size: 1.2em;
@@ -267,7 +304,7 @@
             display: flex;
             gap: 10px;
             padding: 10px;
-            border-radius: 8品種;
+            border-radius: 8px;
             background-color: #e9ecef;
             align-items: center;
         }
@@ -300,9 +337,9 @@
 
         /* --- Random Song Button Styling --- */
         #random-song-btn {
-            display: block; /* Make it a block element */
-            width: calc(100% - 40px); /* Full width minus padding */
-            margin: 10px 20px 10px 20px; /* Center with some top/bottom margin */
+            display: block;
+            width: calc(100% - 40px);
+            margin: 10px 20px 10px 20px;
             padding: 12px 15px;
             background-color: #ffc107;
             color: #333;
@@ -312,16 +349,52 @@
             font-size: 1.1em;
             font-weight: bold;
             text-align: center;
-            transition: background-color 0.2s, transform 0.1s;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: background-color 0.2s;
+            box-shadow: none;
         }
         #random-song-btn:hover {
             background-color: #e0a800;
-            transform: translateY(-1px);
         }
         #random-song-btn:active {
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* --- Back to Top Button --- */
+        #back-to-top-btn {
+            display: none; /* Hidden by default */
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 998; /* Below sidebar, above overlay */
+            background-color: #880056; /* Match a theme color */
+            color: white;
+            border: none;
+            border-radius: 50%; /* Make it round */
+            width: 50px;
+            height: 50px;
+            font-size: 2em; /* Make the arrow large */
+            line-height: 50px; /* Center text vertically */
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            transition: background-color 0.3s ease, transform 0.2s ease, opacity 0.3s ease;
+            opacity: 0.8; /* Slightly transparent */
+        }
+        #back-to-top-btn:hover {
+            background-color: #6a0d45; /* Darker shade on hover */
+            transform: translateY(-3px); /* Subtle lift */
+            opacity: 1;
+        }
+        #back-to-top-btn:active {
             transform: translateY(0);
             box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+        /* Mobile specific adjustment for safe area if needed */
+        @supports (padding-bottom: env(safe-area-inset-bottom)) {
+            #back-to-top-btn {
+                bottom: calc(20px + env(safe-area-inset-bottom));
+            }
         }
     </style>
 </head>
@@ -339,8 +412,8 @@
 
     <div class="main-content">
         <div class="container">
-            <h1></h1>
-
+            <h1>Epic: The Musical</h1>
+            
             <div id="loading-message">Loading musical data...</div>
             
             <div id="search-container">
@@ -352,6 +425,9 @@
                 </div>
         </div>
     </div>
+
+    <button id="back-to-top-btn" title="Back to Top">
+        &uparrow; </button>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -365,7 +441,7 @@
             const searchInput = document.getElementById('search-input');
             const clearSearchBtn = document.getElementById('clear-search-btn');
             const randomSongBtn = document.getElementById('random-song-btn');
-            // Removed: const minimizeAllBtn = document.getElementById('minimize-all-btn'); 
+            const backToTopBtn = document.getElementById('back-to-top-btn');
 
             const epicFilePath = 'epic.txt';
             const dataFilePath = 'data.json';
@@ -374,8 +450,8 @@
                 sagaColors: {},
                 songScores: {}
             };
-            let musicalData = null; // Store parsed musical data globally
-            let allSongElements = []; // To store references to all song divs for random jump
+            let musicalData = null;
+            let allSongElements = [];
 
             // --- Menu Toggle Logic (for the entire sidebar) ---
             const toggleMenu = () => {
@@ -397,15 +473,13 @@
                     const songName = songDiv.querySelector('.song-name span').textContent.toLowerCase();
                     const lyrics = songDiv.querySelector('.lyrics').textContent.toLowerCase();
 
-                    // Check if query is in song name or lyrics
                     if (songName.includes(lowerCaseQuery) || lyrics.includes(lowerCaseQuery)) {
-                        songDiv.style.display = 'block'; // Show song
+                        songDiv.style.display = 'block';
                     } else {
-                        songDiv.style.display = 'none'; // Hide song
+                        songDiv.style.display = 'none';
                     }
                 });
 
-                // Show/hide sagas based on whether they contain visible songs
                 allSagas.forEach(sagaDiv => {
                     const songsInSaga = sagaDiv.querySelectorAll('.song');
                     let sagaHasVisibleSongs = false;
@@ -414,22 +488,19 @@
                             sagaHasVisibleSongs = true;
                         }
                     });
-                    sagaDiv.style.display = sagaHasVisibleSongs ? 'flex' : 'none'; // Use flex as saga is a flex container
+                    sagaDiv.style.display = sagaHasVisibleSongs ? 'flex' : 'none';
                 });
 
-                // Update navigation visibility based on search
                 updateNavBasedOnSearch(lowerCaseQuery);
 
-                // If search is active, disable scroll-based background color and active nav links
                 if (lowerCaseQuery) {
                     window.removeEventListener('scroll', handleScroll);
-                    // Remove active classes from all nav links when search is active
                     navList.querySelectorAll('a').forEach(link => link.classList.remove('active'));
-                    // Auto-expand all saga lists in nav during search
+                    musicContainer.querySelectorAll('.song').forEach(song => song.classList.remove('active'));
                     navList.querySelectorAll('.nav-saga-item').forEach(item => item.classList.add('expanded'));
                 } else {
                     window.addEventListener('scroll', handleScroll);
-                    handleScroll(); // Re-apply current saga color and active nav state
+                    handleScroll();
                 }
             };
 
@@ -451,32 +522,27 @@
                         }
                     });
 
-                    // Show/hide saga nav item
                     if (query && sagaHasVisibleNavSongs) {
                         sagaItem.style.display = 'block';
-                        sagaItem.classList.add('expanded'); // Auto-expand during search
+                        sagaItem.classList.add('expanded');
                     } else if (query && !sagaHasVisibleNavSongs) {
                         sagaItem.style.display = 'none';
-                    } else { // No query, show all and revert to non-expanded (default)
+                    } else {
                         sagaItem.style.display = 'block';
-                        // Keep saga expanded/collapsed based on user click if no search
-                        // Don't remove expanded class here unless it was previously expanded by search
                     }
                 });
             };
 
-
-            // Event listeners for search input
             searchInput.addEventListener('input', () => {
                 clearTimeout(searchTimeout);
                 searchTimeout = setTimeout(() => {
                     filterSongs(searchInput.value);
-                }, 300); // Debounce to prevent excessive filtering
+                }, 300);
             });
 
             clearSearchBtn.addEventListener('click', () => {
                 searchInput.value = '';
-                filterSongs(''); // Clear the filter
+                filterSongs('');
             });
 
             // --- Random Song Button Logic ---
@@ -487,19 +553,17 @@
                     
                     randomSongDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-                    // Find the parent saga for the random song to update background and nav link
                     const parentSagaDiv = randomSongDiv.closest('.saga');
                     if (parentSagaDiv) {
                         const sagaIndex = parseInt(parentSagaDiv.id.replace('saga-', ''));
                         const sagaName = musicalData.sagas[sagaIndex].name;
                         updateBodyBackground(sagaName);
 
-                        // Manually set active states for the random song's saga and song link
                         navList.querySelectorAll('a').forEach(link => link.classList.remove('active'));
+                        musicContainer.querySelectorAll('.song').forEach(song => song.classList.remove('active'));
                         
-                        // Collapse all sagas except the one containing the random song
                         navList.querySelectorAll('.nav-saga-item').forEach(item => {
-                            if (item !== parentSagaDiv.querySelector('.nav-saga-item')) { // This comparison is not quite right, fix below
+                            if (item !== document.querySelector(`.nav-saga-item a[href="#${parentSagaDiv.id}"]`).closest('.nav-saga-item')) {
                                 item.classList.remove('expanded');
                             }
                         });
@@ -507,6 +571,7 @@
                         const navSongLink = document.querySelector(`.nav-song-item a[href="#${randomSongDiv.id}"]`);
                         if (navSongLink) {
                             navSongLink.classList.add('active');
+                            randomSongDiv.classList.add('active');
                             const parentNavSagaItem = navSongLink.closest('.nav-saga-item');
                             if (parentNavSagaItem) {
                                 parentNavSagaItem.classList.add('expanded');
@@ -515,15 +580,29 @@
                         }
                     }
 
-                    // Close the menu after jumping to a random song
                     toggleMenu();
                 }
             });
 
+            // --- Back to Top Button Logic ---
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 300) {
+                    backToTopBtn.style.display = 'block';
+                } else {
+                    backToTopBtn.style.display = 'none';
+                }
+            });
+
+            backToTopBtn.addEventListener('click', () => {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
 
             // Function to parse the plain text file
             function parseMusicalFile(text) {
-                let musical = { title: '', sagas: [] };
+                let musical = { title: 'Epic: The Musical', sagas: [] };
                 let currentSaga = null;
                 let currentSong = null;
                 let lyricsBuffer = [];
@@ -535,7 +614,6 @@
                     const trimmedLine = line.trim();
 
                     if (isFirstLine) {
-                        musical.title = trimmedLine;
                         isFirstLine = false;
                         return;
                     }
@@ -594,17 +672,18 @@
                 return sagaName;
             }
 
-            // Function to update the body background color based on the active saga
+            // Function to update the body background color and page title based on the active saga
             function updateBodyBackground(activeSagaName) {
                 const sanitizedSagaName = getSanitizedSagaName(activeSagaName);
-                const color = appData.sagaColors[sanitizedSagaName] || '#f4f4f4'; // Fallback to default
+                const color = appData.sagaColors[sanitizedSagaName] || '#f4f4f4';
                 document.body.style.backgroundColor = color;
+                document.title = `Epic: The Musical - ${activeSagaName}`;
             }
 
             // Function to display the parsed data on the webpage and build navigation
             function displayMusic(musicalData) {
                 loadingMessage.style.display = 'none';
-                musicalTitleElem.textContent = musicalData.title || 'Untitled Musical';
+                document.title = musicalData.title || 'Epic: The Musical';
 
                 if (musicalData.sagas.length === 0) {
                     musicContainer.innerHTML = '<p>No musical data found or parsed.</p>';
@@ -671,25 +750,24 @@
                     navSongUl.classList.add('nav-song-list');
                     navSagaLi.appendChild(navSongUl);
 
-                    // Saga navigation link click listener: Toggle expanded state and collapse others
                     navSagaLink.addEventListener('click', (e) => {
                         e.preventDefault();
                         const targetId = e.target.closest('a').getAttribute('href').substring(1);
                         document.getElementById(targetId).scrollIntoView({ behavior: 'smooth' });
                         
-                        // Collapse all other sagas
                         navList.querySelectorAll('.nav-saga-item').forEach(item => {
-                            if (item !== navSagaLi) { // Only collapse if it's not the clicked saga
+                            if (item !== navSagaLi) {
                                 item.classList.remove('expanded');
                             }
                         });
                         
-                        // Toggle expanded state for THIS saga
                         navSagaLi.classList.toggle('expanded');
                         
-                        // Update background immediately on menu click
                         updateBodyBackground(saga.name);
-                        // Do NOT close the entire menu here
+
+                        navList.querySelectorAll('a').forEach(link => link.classList.remove('active'));
+                        musicContainer.querySelectorAll('.song').forEach(song => song.classList.remove('active'));
+                        navSagaLink.classList.add('active');
                     });
 
 
@@ -707,26 +785,25 @@
                         songTitleText.textContent = song.name;
                         songNameElem.appendChild(songTitleText);
 
-                        // Add tiny music score link ALWAYS, even if path is empty
                         const scorePath = appData.songScores[saga.name] ? appData.songScores[saga.name][song.name] : null;
                         const tinyScoreLink = document.createElement('a');
-                        tinyScoreLink.href = scorePath || '#'; // Use '#' if no path
+                        tinyScoreLink.href = scorePath || '#';
                         tinyScoreLink.textContent = '[Score]';
                         tinyScoreLink.classList.add('tiny-score-link');
-                        tinyScoreLink.target = '_blank'; // Open in new tab
+                        tinyScoreLink.target = '_blank';
                         if (!scorePath) {
-                            tinyScoreLink.style.opacity = '0.5'; // Make it slightly dim if no actual link
-                            tinyScoreLink.style.cursor = 'default'; // Change cursor
-                            tinyScoreLink.title = 'No score available'; // Add tooltip
+                            tinyScoreLink.style.opacity = '0.5';
+                            tinyScoreLink.style.cursor = 'default';
+                            tinyScoreLink.title = 'No score available';
                             tinyScoreLink.addEventListener('click', (event) => {
                                 if (tinyScoreLink.href === '#') {
-                                    event.preventDefault(); // Prevent default if it's just a placeholder
+                                    event.preventDefault();
                                 }
                             });
                         }
                         songNameElem.appendChild(tinyScoreLink);
 
-                        songDiv.appendChild(songNameElem); // Append the h3 with title and link
+                        songDiv.appendChild(songNameElem);
 
                         const lyricsElem = document.createElement('pre');
                         lyricsElem.classList.add('lyrics');
@@ -734,7 +811,7 @@
                         songDiv.appendChild(lyricsElem);
 
                         sagaDiv.appendChild(songDiv);
-                        allSongElements.push(songDiv); // Add to global list for random jump
+                        allSongElements.push(songDiv);
 
                         // Create navigation menu item for song
                         const navSongLi = document.createElement('li');
@@ -745,29 +822,23 @@
                         navSongLi.appendChild(navSongLink);
                         navSongUl.appendChild(navSongLi);
 
-                        // Song navigation link click listener: Scroll to song, update background, do NOT close menu
                         navSongLink.addEventListener('click', (e) => {
                             e.preventDefault();
                             const targetId = e.target.getAttribute('href').substring(1);
-                            document.getElementById(targetId).scrollIntoView({ behavior: 'smooth' });
-                            // Update background when navigating to a song via menu
+                            document.getElementById(targetId).scrollIntoView({ behavior: 'smooth', block: 'center' });
                             updateBodyBackground(saga.name);
 
-                            // Set active class for the clicked song and its parent saga
                             navList.querySelectorAll('a').forEach(link => link.classList.remove('active'));
+                            musicContainer.querySelectorAll('.song').forEach(song => song.classList.remove('active'));
+
                             e.target.classList.add('active');
+                            document.getElementById(targetId).classList.add('active');
+
                             const parentSagaLi = e.target.closest('.nav-saga-item');
                             if (parentSagaLi) {
-                                // Collapse all other sagas
-                                navList.querySelectorAll('.nav-saga-item').forEach(item => {
-                                    if (item !== parentSagaLi) { // Only collapse if it's not the current saga
-                                        item.classList.remove('expanded');
-                                    }
-                                });
-                                parentSagaLi.classList.add('expanded'); // Ensure the parent is expanded
+                                parentSagaLi.classList.add('expanded');
                                 parentSagaLi.querySelector('.nav-saga-item > a').classList.add('active');
                             }
-                            // Do NOT close the menu here
                         });
                     });
 
@@ -775,56 +846,51 @@
                     navList.appendChild(navSagaLi);
                 });
 
-                // Initial background color set for the first saga
                 if (musicalData.sagas.length > 0) {
                     updateBodyBackground(musicalData.sagas[0].name);
+                } else {
+                    document.title = 'Epic: The Musical';
                 }
 
-                // --- Scroll Listener for Active Link Highlighting and Background Change (NO MENU EXPANSION) ---
-                // Store the scroll handler in a variable so we can add/remove it
                 const handleScroll = () => {
-                    // Only update active links if search input is empty
                     if (searchInput.value !== '') {
-                        return; // Exit if search is active
+                        return;
                     }
 
                     const sagas = document.querySelectorAll('.saga');
                     const songs = document.querySelectorAll('.song');
                     const navSagaLinks = document.querySelectorAll('.nav-saga-item > a');
                     const navSongLinks = document.querySelectorAll('.nav-song-item a');
-                    const navSagaItems = document.querySelectorAll('.nav-saga-item'); // Get all saga list items
+                    const navSagaItems = document.querySelectorAll('.nav-saga-item');
 
                     let activeSongId = '';
                     let activeSagaNameForBackground = '';
-                    let activeNavSagaItem = null; // Store reference to the currently active nav saga item
+                    let activeNavSagaItem = null;
 
-                    // Prioritize song highlighting
+                    songs.forEach(song => song.classList.remove('active'));
+
                     let foundActiveSong = false;
                     for (let i = songs.length - 1; i >= 0; i--) {
                         const song = songs[i];
                         const rect = song.getBoundingClientRect();
-                        // Consider a song active if its top is within 1/3rd of viewport height from top
                         if (rect.top <= window.innerHeight / 3 && rect.bottom > window.innerHeight / 3) {
                             activeSongId = song.id;
+                            song.classList.add('active');
                             foundActiveSong = true;
-                            // Find the parent saga for this song to get its name for background
                             const parentSagaDiv = song.closest('.saga');
                             if (parentSagaDiv) {
                                 const sagaIndex = parseInt(parentSagaDiv.id.replace('saga-', ''));
                                 activeSagaNameForBackground = musicalData.sagas[sagaIndex].name;
-                                // Find the corresponding nav saga item
                                 activeNavSagaItem = document.querySelector(`.nav-saga-item a[href="#${parentSagaDiv.id}"]`).closest('.nav-saga-item');
                             }
                             break;
                         }
                     }
                     
-                    // If no specific song is active, find the active saga
                     if (!foundActiveSong) {
                          for (let i = sagas.length - 1; i >= 0; i--) {
                             const saga = sagas[i];
                             const rect = saga.getBoundingClientRect();
-                            // Consider a saga active if its top is within 1/3rd of viewport height from top
                             if (rect.top <= window.innerHeight / 3 && rect.bottom > window.innerHeight / 3) {
                                 activeSagaNameForBackground = musicalData.sagas[i].name;
                                 activeNavSagaItem = document.querySelector(`.nav-saga-item a[href="#${saga.id}"]`).closest('.nav-saga-item');
@@ -833,26 +899,22 @@
                         }
                     }
                     
-                    // Update body background
                     if (activeSagaNameForBackground) {
                         updateBodyBackground(activeSagaNameForBackground);
                     } else {
-                        // Fallback if no saga is active (e.g., at very top of page before first saga)
                         document.body.style.backgroundColor = '#f4f4f4';
+                        document.title = 'Epic: The Musical';
                     }
 
-                    // Remove all active classes and collapse sagas first
                     navSagaLinks.forEach(link => link.classList.remove('active'));
                     navSongLinks.forEach(link => link.classList.remove('active'));
                     
-                    // Collapse all sagas except the one that is currently active via scroll
                     navSagaItems.forEach(item => {
                         if (item !== activeNavSagaItem) {
                             item.classList.remove('expanded');
                         }
                     });
 
-                    // Set active classes based on scroll position
                     if (activeSongId) {
                         const activeLink = document.querySelector(`.nav-song-item a[href="#${activeSongId}"]`);
                         if (activeLink) {
@@ -860,20 +922,18 @@
                             const parentSagaLi = activeLink.closest('.nav-saga-item');
                             if (parentSagaLi) {
                                 parentSagaLi.querySelector('.nav-saga-item > a').classList.add('active');
-                                parentSagaLi.classList.add('expanded'); // Ensure the parent is expanded when its child song is active
+                                parentSagaLi.classList.add('expanded');
                             }
                         }
-                    } else if (activeNavSagaItem) { // If no specific song, but a saga is active by scroll
+                    } else if (activeNavSagaItem) {
                         activeNavSagaItem.querySelector('.nav-saga-item > a').classList.add('active');
-                        activeNavSagaItem.classList.add('expanded'); // Ensure the active saga is expanded by scroll
+                        activeNavSagaItem.classList.add('expanded');
                     }
                 };
 
-                // Attach scroll listener
                 window.addEventListener('scroll', handleScroll);
             }
 
-            // Fetch both files and then process them
             Promise.all([
                 fetch(epicFilePath).then(response => {
                     if (!response.ok) {
@@ -890,9 +950,9 @@
             ])
             .then(([epicText, jsonData]) => {
                 appData = jsonData;
-                musicalData = parseMusicalFile(epicText); // Store parsed data
+                musicalData = parseMusicalFile(epicText);
                 displayMusic(musicalData);
-                handleScroll(); // Call once after content is loaded to set initial active state and background
+                handleScroll();
             })
             .catch(error => {
                 console.error('Error fetching or parsing data:', error);
