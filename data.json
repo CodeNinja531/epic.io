@@ -1,14 +1,14 @@
 {
   "sagaColors": {
-    "Troy": "#DC143C",          
-    "Cyclops": "#4682B4",       
+    "Troy": "#FC9259",          
+    "Cyclops": "#CE0706",       
     "Ocean": "#1E90FF",         
     "Circe": "#8A2BE2",         
     "Underworld": "#696969",    
-    "Thunder": "#FFD700",       
-    "Wisdom": "#32CD32",        
-    "Vengeance": "#8B0000",     
-    "Ithaca": "#3CB371"         
+    "Thunder": "#E5BB4A",       
+    "Wisdom": "#464DB8",        
+    "Vengeance": "#1C6875",     
+    "Ithaca": "#9A010E"         
   },
   "songScores": {
     "The Troy Saga": {
