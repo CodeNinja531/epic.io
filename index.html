@@ -86,7 +86,7 @@
             transition: max-height 0.3s ease-out;
         }
         .nav-saga-item.expanded .nav-song-list {
-            max-height: 500px;
+            max-height: 500px; /* Adjust as needed for max songs in a saga */
         }
         .nav-song-item a {
             display: block;
@@ -227,7 +227,7 @@
             color: #555;
             border: 1px dashed #ccc;
         }
-        .score-link { /* General styling for score links */
+        .score-link { /* General styling for score links - not used for tiny link */
             display: inline-block;
             padding: 5px 10px;
             background-color: #28a745;
@@ -295,6 +295,32 @@
         #clear-search-btn:hover {
             background-color: #c82333;
         }
+
+        /* --- Random Song Button Styling --- */
+        #random-song-btn {
+            display: block; /* Make it a block element */
+            width: calc(100% - 40px); /* Full width minus padding */
+            margin: 10px 20px 20px 20px; /* Center with some top/bottom margin */
+            padding: 12px 15px;
+            background-color: #ffc107;
+            color: #333;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: bold;
+            text-align: center;
+            transition: background-color 0.2s, transform 0.1s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        #random-song-btn:hover {
+            background-color: #e0a800;
+            transform: translateY(-1px);
+        }
+        #random-song-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
     </style>
 </head>
 <body>
@@ -302,8 +328,10 @@
 
     <nav id="sidebar-nav" class="collapsed">
         <h2>Musical Index</h2>
+        <button id="random-song-btn">Jump to Random Song</button>
         <ul id="nav-list">
-            </ul>
+            <!-- Navigation items will be injected here -->
+        </ul>
     </nav>
 
     <div id="overlay"></div>
@@ -320,7 +348,8 @@
             </div>
 
             <div id="music-container">
-                </div>
+                <!-- Music content will be injected here by JavaScript -->
+            </div>
         </div>
     </div>
 
@@ -335,6 +364,7 @@
             const overlay = document.getElementById('overlay');
             const searchInput = document.getElementById('search-input');
             const clearSearchBtn = document.getElementById('clear-search-btn');
+            const randomSongBtn = document.getElementById('random-song-btn'); // New button
 
             const epicFilePath = 'epic.txt';
             const dataFilePath = 'data.json';
@@ -344,6 +374,7 @@
                 songScores: {}
             };
             let musicalData = null; // Store parsed musical data globally
+            let allSongElements = []; // To store references to all song divs for random jump
 
             // --- Menu Toggle Logic ---
             const toggleMenu = () => {
@@ -360,8 +391,7 @@
                 const lowerCaseQuery = query.toLowerCase().trim();
                 const allSongs = musicContainer.querySelectorAll('.song');
                 const allSagas = musicContainer.querySelectorAll('.saga');
-                let foundMatch = false;
-
+                
                 allSongs.forEach(songDiv => {
                     const songName = songDiv.querySelector('.song-name span').textContent.toLowerCase();
                     const lyrics = songDiv.querySelector('.lyrics').textContent.toLowerCase();
@@ -369,7 +399,6 @@
                     // Check if query is in song name or lyrics
                     if (songName.includes(lowerCaseQuery) || lyrics.includes(lowerCaseQuery)) {
                         songDiv.style.display = 'block'; // Show song
-                        foundMatch = true;
                     } else {
                         songDiv.style.display = 'none'; // Hide song
                     }
@@ -387,15 +416,19 @@
                     sagaDiv.style.display = sagaHasVisibleSongs ? 'flex' : 'none'; // Use flex as saga is a flex container
                 });
 
-                // Update navigation visibility
+                // Update navigation visibility based on search
                 updateNavBasedOnSearch(lowerCaseQuery);
 
-                // If search is active, disable scroll-based background color
+                // If search is active, disable scroll-based background color and active nav links
                 if (lowerCaseQuery) {
                     window.removeEventListener('scroll', handleScroll);
+                    // Remove active classes from all nav links when search is active
+                    navList.querySelectorAll('a').forEach(link => link.classList.remove('active'));
+                    // Collapse all saga lists in nav during search
+                    navList.querySelectorAll('.nav-saga-item').forEach(item => item.classList.remove('expanded'));
                 } else {
                     window.addEventListener('scroll', handleScroll);
-                    handleScroll(); // Re-apply current saga color
+                    handleScroll(); // Re-apply current saga color and active nav state
                 }
             };
 
@@ -428,15 +461,6 @@
                         sagaItem.classList.remove('expanded');
                     }
                 });
-
-                // After filtering, ensure correct scroll listener is active or not
-                if (query) {
-                    // When a query is active, remove active classes from nav
-                    navList.querySelectorAll('a').forEach(link => link.classList.remove('active'));
-                } else {
-                    // When search is cleared, re-trigger scroll to set active and background
-                    handleScroll();
-                }
             };
 
 
@@ -452,6 +476,33 @@
                 searchInput.value = '';
                 filterSongs(''); // Clear the filter
             });
+
+            // --- Random Song Button Logic ---
+            randomSongBtn.addEventListener('click', () => {
+                if (allSongElements.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * allSongElements.length);
+                    const randomSongDiv = allSongElements[randomIndex];
+                    
+                    randomSongDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+                    // Find the saga name for the random song to update background
+                    const parentSagaDiv = randomSongDiv.closest('.saga');
+                    if (parentSagaDiv) {
+                        const sagaIndex = parseInt(parentSagaDiv.id.replace('saga-', ''));
+                        const sagaName = musicalData.sagas[sagaIndex].name;
+                        updateBodyBackground(sagaName);
+                    }
+
+                    // Close the menu after jumping to a random song
+                    toggleMenu();
+
+                    // Update active navigation link for the random song
+                    // This will be handled by handleScroll after the smooth scroll finishes
+                    // For immediate visual feedback, you could try to manually set active class
+                    // but handleScroll is more reliable after scroll completes.
+                }
+            });
+
 
             // Function to parse the plain text file
             function parseMusicalFile(text) {
@@ -562,7 +613,10 @@
                     const sagaIconMain = document.createElement('img');
                     sagaIconMain.src = iconPath;
                     sagaIconMain.alt = `${saga.name} icon`;
-                    sagaIconMain.onerror = () => { sagaIconMain.style.display = 'none'; };
+                    sagaIconMain.onerror = () => { 
+                        sagaIconMain.style.display = 'none'; 
+                        console.warn(`Failed to load icon: ${iconPath}`);
+                    };
                     sagaIconMain.style.borderColor = sagaColor;
                     sagaHeader.appendChild(sagaIconMain);
 
@@ -583,7 +637,10 @@
                     const navSagaIcon = document.createElement('img');
                     navSagaIcon.src = iconPath;
                     navSagaIcon.alt = `${saga.name} icon`;
-                    navSagaIcon.onerror = () => { navSagaIcon.style.display = 'none'; };
+                    navSagaIcon.onerror = () => { 
+                        navSagaIcon.style.display = 'none'; 
+                        console.warn(`Failed to load nav icon: ${iconPath}`);
+                    };
                     navSagaIcon.style.borderColor = sagaColor;
                     navSagaLink.appendChild(navSagaIcon);
 
@@ -601,7 +658,9 @@
                         e.preventDefault();
                         const targetId = e.target.closest('a').getAttribute('href').substring(1);
                         document.getElementById(targetId).scrollIntoView({ behavior: 'smooth' });
+                        // Toggle expanded state only if clicking the saga link itself
                         navSagaLi.classList.toggle('expanded');
+                        // Collapse other sagas
                         document.querySelectorAll('.nav-saga-item').forEach(item => {
                             if (item !== navSagaLi) {
                                 item.classList.remove('expanded');
@@ -609,8 +668,7 @@
                         });
                         // Update background immediately on menu click
                         updateBodyBackground(saga.name);
-                        // Close menu after clicking a saga in nav
-                        toggleMenu();
+                        // Do NOT close the menu here, let user navigate
                     });
 
 
@@ -637,6 +695,8 @@
                             tinyScoreLink.classList.add('tiny-score-link');
                             tinyScoreLink.target = '_blank'; // Open in new tab
                             songNameElem.appendChild(tinyScoreLink);
+                        } else {
+                            console.warn(`No score path found for song: "${song.name}" in saga: "${saga.name}". Check data.json.`);
                         }
 
                         songDiv.appendChild(songNameElem); // Append the h3 with title and link
@@ -647,6 +707,7 @@
                         songDiv.appendChild(lyricsElem);
 
                         sagaDiv.appendChild(songDiv);
+                        allSongElements.push(songDiv); // Add to global list for random jump
 
                         // Create navigation menu item for song
                         const navSongLi = document.createElement('li');
@@ -661,7 +722,7 @@
                             e.preventDefault();
                             const targetId = e.target.getAttribute('href').substring(1);
                             document.getElementById(targetId).scrollIntoView({ behavior: 'smooth' });
-                            toggleMenu();
+                            // Do NOT close the menu here
                             // Update background when navigating to a song via menu
                             updateBodyBackground(saga.name);
                         });
@@ -761,7 +822,11 @@
                             const sagaLink = item.querySelector('.nav-saga-item > a');
                             const isActiveOrAncestor = sagaLink.classList.contains('active') || item.querySelector('.nav-song-item a.active');
                             if (!isActiveOrAncestor) {
-                                item.classList.remove('expanded');
+                                // Only collapse if it's not the active saga or an ancestor of an active song
+                                // And it's not being actively expanded by a click
+                                if (!item.classList.contains('expanded')) { // Prevent collapsing if user just clicked to expand
+                                    item.classList.remove('expanded');
+                                }
                             }
                         });
                     }
