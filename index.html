@@ -14,7 +14,6 @@
             background-color: #f4f4f4;
             color: #333;
             overflow-x: hidden;
-            /* Add smooth transition for background-color */
             transition: background-color 0.8s ease-in-out;
         }
 
@@ -39,7 +38,6 @@
             transform: translateX(-100%);
             transition: transform 0.3s ease;
             z-index: 1000;
-            /* Re-add padding for mobile safe areas */
             padding-bottom: calc(20px + env(safe-area-inset-bottom));
             scroll-padding-bottom: env(safe-area-inset-bottom);
         }
@@ -153,7 +151,6 @@
             box-sizing: border-box;
             transition: margin-left 0.3s ease;
         }
-        /* Re-add: margin shift for main content when sidebar is open */
         body:has(#sidebar-nav:not(.collapsed)) .main-content {
             margin-left: 250px;
         }
@@ -227,6 +224,8 @@
             padding-left: 15px;
             border-left: 3px solid #8a2be2;
             transition: none;
+            /* New: Add scroll-margin-top to ensure elements are not hidden by fixed headers */
+            scroll-margin-top: 70px; /* Adjust this value if your fixed elements are taller */
         }
 
         .song.active {
@@ -800,7 +799,6 @@
                             tinyScoreLink.addEventListener('click', (event) => {
                                 if (tinyScoreLink.href === '#') {
                                     event.preventDefault();
-                                    // You can add a subtle visual cue here if desired, e.g., a temporary border
                                 }
                             });
                         }
@@ -876,7 +874,6 @@
                     for (let i = songs.length - 1; i >= 0; i--) {
                         const song = songs[i];
                         const rect = song.getBoundingClientRect();
-                        // Adjust the trigger point to be closer to the top of the viewport for background change
                         if (rect.top <= window.innerHeight / 2 && rect.bottom > window.innerHeight / 2) {
                             activeSongId = song.id;
                             song.classList.add('active');
@@ -906,7 +903,6 @@
                     if (activeSagaNameForBackground) {
                         updateBodyBackground(activeSagaNameForBackground);
                     } else {
-                        // Fallback to default if no saga is actively visible
                         document.body.style.backgroundColor = '#f4f4f4';
                         document.title = 'Epic: The Musical';
                     }
@@ -957,7 +953,7 @@
                 appData = jsonData;
                 musicalData = parseMusicalFile(epicText);
                 displayMusic(musicalData);
-                handleScroll(); // Initial call to set correct background/active state on load
+                handleScroll();
             })
             .catch(error => {
                 console.error('Error fetching or parsing data:', error);
