@@ -197,6 +197,8 @@
             background-color: #f7f3fd;
             display: flex;
             flex-direction: column;
+            /* New: Ensure correct scroll position for sagas */
+            scroll-margin-top: 100px; 
         }
         .saga-header {
             display: flex;
@@ -224,8 +226,8 @@
             padding-left: 15px;
             border-left: 3px solid #8a2be2;
             transition: none;
-            /* New: Add scroll-margin-top to ensure elements are not hidden by fixed headers */
-            scroll-margin-top: 70px; /* Adjust this value if your fixed elements are taller */
+            /* Updated: Provide more space for fixed elements */
+            scroll-margin-top: 100px;
         }
 
         .song.active {
