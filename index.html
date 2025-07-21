@@ -145,7 +145,7 @@
         /* --- Main Content Area --- */
         .main-content {
             flex-grow: 1;
-            padding-top: 70px; /* To push content below the fixed menu toggle */
+            padding-top: 70px; /* To push content below the fixed menu toggle on initial load */
             padding-left: 20px;
             padding-right: 20px;
             padding-bottom: 20px;
@@ -201,7 +201,7 @@
             background-color: #f7f3fd;
             display: flex;
             flex-direction: column;
-            scroll-margin-top: 100px; 
+            /* scroll-margin-top is now handled by JS for programmatic scrolls */
         }
         .saga-header {
             display: flex;
@@ -229,7 +229,7 @@
             padding-left: 15px;
             border-left: 3px solid #8a2be2;
             transition: none;
-            scroll-margin-top: 100px;
+            /* scroll-margin-top is now handled by JS for programmatic scrolls */
         }
 
         .song.active {
@@ -417,6 +417,11 @@
             let musicalData = null;
             let allSongElements = [];
 
+            // Define a constant for the fixed header's height offset
+            // This is used to determine when an element is "in view" below the fixed menu,
+            // and for manual scrolling. Increased slightly for more clearance.
+            const FIXED_HEADER_OFFSET = 90; 
+
             // --- Menu Toggle Logic (for the entire sidebar) ---
             const toggleMenu = () => {
                 sidebarNav.classList.toggle('collapsed');
@@ -515,7 +520,12 @@
                     const randomIndex = Math.floor(Math.random() * allSongElements.length);
                     const randomSongDiv = allSongElements[randomIndex];
                     
-                    randomSongDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    // Manual scroll for random button too
+                    const scrollPosition = randomSongDiv.offsetTop - FIXED_HEADER_OFFSET;
+                    window.scrollTo({
+                        top: scrollPosition > 0 ? scrollPosition : 0,
+                        behavior: 'smooth'
+                    });
 
                     const parentSagaDiv = randomSongDiv.closest('.saga');
                     if (parentSagaDiv) {
@@ -701,7 +711,14 @@
                     navSagaLink.addEventListener('click', (e) => {
                         e.preventDefault();
                         const targetId = e.target.closest('a').getAttribute('href').substring(1);
-                        document.getElementById(targetId).scrollIntoView({ behavior: 'smooth' });
+                        const targetElement = document.getElementById(targetId);
+                        if (targetElement) {
+                            const scrollPosition = targetElement.offsetTop - FIXED_HEADER_OFFSET;
+                            window.scrollTo({
+                                top: scrollPosition > 0 ? scrollPosition : 0,
+                                behavior: 'smooth'
+                            });
+                        }
                         
                         navList.querySelectorAll('.nav-saga-item').forEach(item => {
                             if (item !== navSagaLi) {
@@ -773,7 +790,14 @@
                         navSongLink.addEventListener('click', (e) => {
                             e.preventDefault();
                             const targetId = e.target.getAttribute('href').substring(1);
-                            document.getElementById(targetId).scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            const targetElement = document.getElementById(targetId);
+                            if (targetElement) {
+                                const scrollPosition = targetElement.offsetTop - FIXED_HEADER_OFFSET;
+                                window.scrollTo({
+                                    top: scrollPosition > 0 ? scrollPosition : 0,
+                                    behavior: 'smooth'
+                                });
+                            }
                             updateBodyBackground(saga.name);
 
                             navList.querySelectorAll('a').forEach(link => link.classList.remove('active'));
@@ -801,6 +825,7 @@
                     document.title = 'Epic: The Musical';
                 }
 
+                // Updated handleScroll function
                 const handleScroll = () => {
                     if (searchInput.value !== '') {
                         return;
@@ -819,10 +844,13 @@
                     songs.forEach(song => song.classList.remove('active'));
 
                     let foundActiveSong = false;
+                    // Iterate songs from bottom up to find the topmost one actively in view
                     for (let i = songs.length - 1; i >= 0; i--) {
                         const song = songs[i];
                         const rect = song.getBoundingClientRect();
-                        if (rect.top <= window.innerHeight / 2 && rect.bottom > window.innerHeight / 2) {
+                        // Check if the song's top edge is at or above the offset, and its bottom is below it
+                        // This makes it "active" when it scrolls into the main content area, below the header.
+                        if (rect.top <= FIXED_HEADER_OFFSET && rect.bottom > FIXED_HEADER_OFFSET) {
                             activeSongId = song.id;
                             song.classList.add('active');
                             foundActiveSong = true;
@@ -836,11 +864,14 @@
                         }
                     }
                     
+                    // If no active song is found (e.g., in between songs, or at the start/end of a saga)
+                    // then try to find an active saga.
                     if (!foundActiveSong) {
                          for (let i = sagas.length - 1; i >= 0; i--) {
                             const saga = sagas[i];
                             const rect = saga.getBoundingClientRect();
-                            if (rect.top <= window.innerHeight / 2 && rect.bottom > window.innerHeight / 2) {
+                            // Check if the saga's top edge is at or above the offset, and its bottom is below it
+                            if (rect.top <= FIXED_HEADER_OFFSET && rect.bottom > FIXED_HEADER_OFFSET) {
                                 activeSagaNameForBackground = musicalData.sagas[i].name;
                                 activeNavSagaItem = document.querySelector(`.nav-saga-item a[href="#${saga.id}"]`).closest('.nav-saga-item');
                                 break;
@@ -858,6 +889,7 @@
                     navSagaLinks.forEach(link => link.classList.remove('active'));
                     navSongLinks.forEach(link => link.classList.remove('active'));
                     
+                    // Collapse all saga lists first, then expand the active one
                     navSagaItems.forEach(item => {
                         if (item !== activeNavSagaItem) {
                             item.classList.remove('expanded');
@@ -901,7 +933,7 @@
                 appData = jsonData;
                 musicalData = parseMusicalFile(epicText);
                 displayMusic(musicalData);
-                handleScroll();
+                handleScroll(); // Call once on load to set initial active state and background
             })
             .catch(error => {
                 console.error('Error fetching or parsing data:', error);
