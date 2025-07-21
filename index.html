@@ -418,8 +418,6 @@
             let allSongElements = [];
 
             // Define a constant for the fixed header's height offset
-            // This is used to determine when an element is "in view" below the fixed menu,
-            // and for manual scrolling. Increased slightly for more clearance.
             const FIXED_HEADER_OFFSET = 90; 
 
             // --- Menu Toggle Logic (for the entire sidebar) ---
@@ -531,7 +529,7 @@
                     if (parentSagaDiv) {
                         const sagaIndex = parseInt(parentSagaDiv.id.replace('saga-', ''));
                         const sagaName = musicalData.sagas[sagaIndex].name;
-                        updateBodyBackground(sagaName);
+                        updateBodyBackground(sagaName); // Update background for random song's saga
 
                         navList.querySelectorAll('a').forEach(link => link.classList.remove('active'));
                         musicContainer.querySelectorAll('.song').forEach(song => song.classList.remove('active'));
@@ -554,7 +552,7 @@
                         }
                     }
 
-                    toggleMenu();
+                    toggleMenu(); // Closes menu for random song
                 }
             });
 
@@ -708,6 +706,7 @@
                     navSongUl.classList.add('nav-song-list');
                     navSagaLi.appendChild(navSongUl);
 
+                    // Updated: Saga link click handler
                     navSagaLink.addEventListener('click', (e) => {
                         e.preventDefault();
                         const targetId = e.target.closest('a').getAttribute('href').substring(1);
@@ -718,6 +717,8 @@
                                 top: scrollPosition > 0 ? scrollPosition : 0,
                                 behavior: 'smooth'
                             });
+                            // Update background immediately for the clicked saga
+                            updateBodyBackground(saga.name); 
                         }
                         
                         navList.querySelectorAll('.nav-saga-item').forEach(item => {
@@ -728,8 +729,7 @@
                         
                         navSagaLi.classList.toggle('expanded');
                         
-                        updateBodyBackground(saga.name);
-
+                        // No toggleMenu() here, so the menu stays open for saga selection
                         navList.querySelectorAll('a').forEach(link => link.classList.remove('active'));
                         musicContainer.querySelectorAll('.song').forEach(song => song.classList.remove('active'));
                         navSagaLink.classList.add('active');
@@ -787,6 +787,7 @@
                         navSongLi.appendChild(navSongLink);
                         navSongUl.appendChild(navSongLi);
 
+                        // Updated: Song link click handler
                         navSongLink.addEventListener('click', (e) => {
                             e.preventDefault();
                             const targetId = e.target.getAttribute('href').substring(1);
@@ -811,6 +812,7 @@
                                 parentSagaLi.classList.add('expanded');
                                 parentSagaLi.querySelector('.nav-saga-item > a').classList.add('active');
                             }
+                            toggleMenu(); // Closes menu for song clicks
                         });
                     });
 
