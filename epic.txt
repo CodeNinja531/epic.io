@@ -716,7 +716,11 @@ This is my goodbye
 Ohh
 Consider this as my goodbye
 Ohh
-This is my goodbye[ODYSSEUS]
+This is my goodbye
+
+** The Ocean Saga
+*Storm
+[ODYSSEUS]
 These waves and tides
 Have grown in strength and size
 Is it nature or divine
@@ -726,8 +730,6 @@ This storm's our final fight
 There's no time to die
 Comrades?
 
-**The Ocean Saga
-*Storm
 [SOLDIERS]
 Sir!
 
@@ -2903,7 +2905,7 @@ Then who?
 [HERMES, spoken]
 Ha-ha, good luck
 
-Charybdis
+*Charybdis
 [ODYSSEUS]
 You must be who Hermes mentioned
 A monster here to block my way
