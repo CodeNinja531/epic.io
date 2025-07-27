@@ -648,7 +648,7 @@ I am the infamous
 Odysseus
 
 *My Goodbye
-[ATHENA, ODYSSEUS ]
+[ATHENA, ODYSSEUS]
 You were reckless, sentimental at best
 That's not a teaching of mine
 You’ve grown soft, your dead friends can attest
@@ -1364,7 +1364,7 @@ You've given me no reason to bestow you with my trust
 But everyone's true colors are revealed in acts of lust
 I'm not sure I follow
 
-There Are Other Ways
+*There Are Other Ways
 There are other ways of persuasion
 There are other modes of control
 There are other means of deceit
