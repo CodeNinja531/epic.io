@@ -60,12 +60,12 @@
       "Dangerous": "https://musescore.com/user/73569127/scores/22828882",
       "Charybdis": "https://example.com/scores/vengeance/charybdis_score_online.html",
       "Get in the Water": "https://example.com/scores/vengeance/get_in_the_water_score_online.html",
-      "Six Hundred Strike": "https://example.com/scores/vengeance/six_hundred_strike_score_online.html",
-      "The Challenge": "https://example.com/scores/vengeance/the_challenge_score_online.html",
-      "Hold Them Down": "https://example.com/scores/vengeance/hold_them_down_score_online.html"
+      "Six Hundred Strike": "https://example.com/scores/vengeance/six_hundred_strike_score_online.html"
     },
     "The Ithaca Saga": {
-      "Odysseus": "https://example.com/scores/ithaca/odysseus_score_online.html",
+      "The Challenge": "https://example.com/scores/vengeance/the_challenge_score_online.html",
+      "Hold Them Down": "https://example.com/scores/vengeance/hold_them_down_score_online.html",
+      "Odysseus (song)": "https://example.com/scores/ithaca/odysseus_score_online.html",
       "I Can't Help but Wonder": "https://musescore.com/user/63553162/scores/22849303",
       "Would You Fall in Love with Me Again": "https://musescore.com/user/91629244/scores/23985496"
     }
