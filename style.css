@@ -1,0 +1,382 @@
+/* Base styles */
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    background-color: #f4f4f4;
+    color: #333;
+    overflow-x: hidden;
+    transition: background-color 0.8s ease-in-out;
+}
+
+/* Headings reverted to default font */
+h1, .saga-name {
+    font-family: Arial, sans-serif;
+    text-transform: uppercase;
+}
+
+/* --- Sidebar Navigation --- */
+#sidebar-nav {
+    width: 250px;
+    background-color: #333;
+    color: #fff;
+    padding: 20px 0;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+    overflow-y: auto;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    z-index: 1000;
+    padding-bottom: calc(20px + env(safe-area-inset-bottom));
+    scroll-padding-bottom: env(safe-area-inset-bottom);
+}
+#sidebar-nav:not(.collapsed) {
+    transform: translateX(0);
+}
+
+#sidebar-nav h2 {
+    text-align: center;
+    color: #ffcc00;
+    margin-top: 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #555;
+    margin-bottom: 20px;
+}
+#sidebar-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.nav-saga-item {
+    margin-bottom: 5px;
+}
+.nav-saga-item a {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+    background-color: #555;
+    margin-bottom: 5px;
+    border-radius: 4px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+.nav-saga-item a:hover {
+    background-color: #777;
+}
+.nav-saga-item a.active {
+    background-color: #007bff;
+    color: #fff;
+}
+.nav-saga-item a img {
+    width: 24px;
+    height: 24px;
+    margin-right: 10px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid #ffcc00;
+}
+
+.nav-song-list {
+    list-style: none;
+    padding-left: 20px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+}
+.nav-saga-item.expanded .nav-song-list {
+    max-height: 500px;
+}
+.nav-song-item a {
+    display: block;
+    padding: 8px 0 8px 10px;
+    color: #ccc;
+    text-decoration: none;
+    font-size: 0.9em;
+    border-left: 3px solid #777;
+    margin-left: 5px;
+    transition: background-color 0.2s ease, color 0.2s ease, border-left-color 0.2s ease;
+}
+.nav-song-item a:hover {
+    color: #fff;
+    background-color: #444;
+    border-left-color: #fff;
+}
+.nav-song-item a.active {
+    color: #ffcc00;
+    font-weight: bold;
+    background-color: #444;
+    border-left-color: #ffcc00;
+}
+
+/* --- Menu Toggle Button --- */
+#menu-toggle {
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    z-index: 1001;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.5em;
+    line-height: 1;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transition: none;
+}
+#menu-toggle:hover {
+    background-color: #0056b3;
+}
+
+/* --- Main Content Area --- */
+.main-content {
+    flex-grow: 1;
+    padding-top: 70px; /* To push content below the fixed menu toggle on initial load */
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 20px;
+    
+    margin-left: 0;
+    width: 100%;
+    box-sizing: border-box;
+    transition: margin-left 0.3s ease;
+}
+body:has(#sidebar-nav:not(.collapsed)) .main-content {
+    margin-left: 250px;
+}
+
+/* Overlay to dim content when menu is open */
+#overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+#overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Main container for content */
+.container {
+    max-width: 900px;
+    margin: auto;
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+h1 {
+    color: #880056;
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 2.5em;
+    text-transform: uppercase;
+}
+.saga {
+    border: 1px solid #c9b4e7;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    padding: 20px;
+    background-color: #f7f3fd;
+    display: flex;
+    flex-direction: column;
+    /* scroll-margin-top is now handled by JS for programmatic scrolls */
+}
+.saga-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #e0d1f7;
+    padding-bottom: 10px;
+}
+.saga-header img {
+    width: 50px;
+    height: 50px;
+    margin-right: 15px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid;
+}
+.saga-name {
+    font-size: 2em;
+    color: #6a0dad;
+    font-weight: bold;
+    margin: 0;
+}
+.song {
+    margin-bottom: 20px;
+    padding-left: 15px;
+    border-left: 3px solid #8a2be2;
+    transition: none;
+    /* scroll-margin-top is now handled by JS for programmatic scrolls */
+}
+
+.song.active {
+    background-color: transparent;
+    border-left: 3px solid #8a2be2;
+    box-shadow: none;
+    padding: 0 0 0 15px;
+}
+
+.song-name {
+    font-size: 1.5em;
+    color: #333;
+    margin-bottom: 8px;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: none;
+}
+.song:hover .song-name {
+    color: #333;
+    transform: none;
+}
+
+.lyrics {
+    white-space: pre-wrap;
+    background-color: #f9f9f9;
+    padding: 10px;
+    border-radius: 4px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.95em;
+    color: #555;
+    border: 1px dashed #ccc;
+}
+.score-link {
+    display: inline-block;
+    padding: 5px 10px;
+    background-color: #28a745;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 0.9em;
+}
+.score-link:hover {
+    background-color: #218838;
+}
+.tiny-score-link {
+    font-size: 0.7em;
+    padding: 3px 6px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 3px;
+    margin-left: 10px;
+    flex-shrink: 0;
+    transition: none;
+    opacity: 1;
+}
+.tiny-score-link:hover {
+    background-color: #0056b3;
+    opacity: 1;
+}
+.song:hover .tiny-score-link {
+    opacity: 1;
+}
+
+#loading-message {
+    text-align: center;
+    font-size: 1.2em;
+    color: #007bff;
+    margin-top: 50px;
+}
+
+/* --- Search Bar Styling --- */
+#search-container {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+    padding: 10px;
+    border-radius: 8px;
+    background-color: #e9ecef;
+    align-items: center;
+}
+#search-input {
+    flex-grow: 1;
+    padding: 10px 15px;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    font-size: 1em;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+#search-input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+#clear-search-btn {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.2s;
+}
+#clear-search-btn:hover {
+    background-color: #c82333;
+}
+
+/* --- Random Song Button Styling --- */
+#random-song-btn {
+    display: block;
+    width: calc(100% - 40px);
+    margin: 10px 20px 10px 20px;
+    padding: 12px 15px;
+    background-color: #ffc107;
+    color: #333;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.1em;
+    font-weight: bold;
+    text-align: center;
+    transition: background-color 0.2s;
+    box-shadow: none;
+}
+#random-song-btn:hover {
+    background-color: #e0a800;
+}
+#random-song-btn:active {
+    transform: none;
+    box-shadow: none;
+}
+
+#wheel-btn {
+    display: block;
+    width: calc(100% - 40px);
+    margin: 10px 20px 10px 20px;
+    padding: 12px 15px;
+    background-color: #ffc107;
+    color: #333;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.1em;
+    font-weight: bold;
+    text-align: center;
+    transition: background-color 0.2s;
+    box-shadow: none;
+}
+#wheel-btn:hover {
+    background-color: #e0a800;
+}
+#wheel-btn:active {
+    transform: none;
+    box-shadow: none;
+}
