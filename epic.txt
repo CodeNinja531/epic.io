@@ -3696,57 +3696,51 @@ class TimerApp:
         self.master.title("Student Timer")
         self.running = False
         self.start_time = None
-        self.time_elapsed = 0
         
         # Create a label for the timer
-        self.timer_label = tk.Label(master, text="00:00:00", font=("Helvetica", 48))
+        self.timer_label = tk.Label(master, text="00:00:00.0", font=("Helvetica", 48))
         self.timer_label.pack(pady=20)
         
-        # Create a button to start and stop the timer
-        self.start_stop_button = tk.Button(master, text="Start Timer", command=self.toggle_timer, font=("Helvetica", 16))
-        self.start_stop_button.pack(pady=10)
+        # Create a button to start the timer
+        self.start_button = tk.Button(master, text="Start", command=self.start_timer, font=("Helvetica", 16))
+        self.start_button.pack(pady=10)
         
-        # Create an entry widget for the student's name
-        self.name_entry = tk.Entry(master, font=("Helvetica", 14))
-        
-        # Create a label to display the recorded time
-        self.recorded_time_label = tk.Label(master, text="", font=("Helvetica", 14))
-        self.recorded_time_label.pack(pady=10)
-        
-        # Create a text widget to display all records
+        # Create a button to record the time and student's name
+        self.record_button = tk.Button(master, text="Record", command=self.record_time, font=("Helvetica", 16), state=tk.DISABLED)
+        self.record_button.pack(pady=10)
+
+        # Create a label to display all records
         self.records_text = tk.Text(master, height=10, width=50, font=("Helvetica", 12))
         self.records_text.pack(pady=20)
-        
-        # Call the update_timer method to start the clock
-        self.update_timer()
 
-    def toggle_timer(self):
-        if self.running:
-            # If the timer is running, stop it
-            self.running = False
-            self.start_stop_button.config(text="Start Timer")
-            self.record_time()
-        else:
-            # If the timer is stopped, start it
+    def start_timer(self):
+        if not self.running:
             self.running = True
             self.start_time = datetime.now()
-            self.start_stop_button.config(text="Stop and Record")
-            
+            self.start_button.config(text="Running...", state=tk.DISABLED)
+            self.record_button.config(state=tk.NORMAL)
+            self.update_timer()
+
     def update_timer(self):
         if self.running:
-            self.time_elapsed = datetime.now() - self.start_time
-            hours, remainder = divmod(self.time_elapsed.seconds, 3600)
-            minutes, seconds = divmod(remainder, 60)
+            time_elapsed = datetime.now() - self.start_time
+            total_seconds = time_elapsed.total_seconds()
             
-            # Format the time as HH:MM:SS
-            time_str = f"{hours:02}:{minutes:02}:{seconds:02}"
+            # Calculate hours, minutes, seconds, and tenths of a second
+            hours = int(total_seconds // 3600)
+            minutes = int((total_seconds % 3600) // 60)
+            seconds = int(total_seconds % 60)
+            tenths = int((total_seconds * 10) % 10)
+
+            # Format the time as HH:MM:SS.T
+            time_str = f"{hours:02}:{minutes:02}:{seconds:02}.{tenths}"
             self.timer_label.config(text=time_str)
             
-        # Call this method again after 1000ms (1 second)
-        self.master.after(1000, self.update_timer)
-        
+        # Call this method again after 100ms (0.1 seconds)
+        self.master.after(100, self.update_timer)
+
     def record_time(self):
-        # Prompt for the student's name
+        # Create a new pop-up window to get the student's name
         name_prompt = tk.Toplevel(self.master)
         name_prompt.title("Enter Name")
         
@@ -3759,14 +3753,14 @@ class TimerApp:
         def save_record():
             student_name = name_entry.get()
             if student_name:
-                # Format the time and create the record string
+                # Get the current time from the timer label and create a record string
                 time_str = self.timer_label.cget("text")
                 record_str = f"Name: {student_name}, Time: {time_str}"
                 
                 # Insert the new record into the text widget
                 self.records_text.insert(tk.END, record_str + "\n")
                 
-                # Clear the name entry field
+                # Clear the entry field and close the pop-up
                 name_entry.delete(0, tk.END)
                 name_prompt.destroy()
             
