@@ -3687,3 +3687,93 @@ Swallowing Illium whole
 Fire, Fire
 Burning into your soul
 
+import tkinter as tk
+from datetime import datetime
+
+class TimerApp:
+    def __init__(self, master):
+        self.master = master
+        self.master.title("Student Timer")
+        self.running = False
+        self.start_time = None
+        self.time_elapsed = 0
+        
+        # Create a label for the timer
+        self.timer_label = tk.Label(master, text="00:00:00", font=("Helvetica", 48))
+        self.timer_label.pack(pady=20)
+        
+        # Create a button to start and stop the timer
+        self.start_stop_button = tk.Button(master, text="Start Timer", command=self.toggle_timer, font=("Helvetica", 16))
+        self.start_stop_button.pack(pady=10)
+        
+        # Create an entry widget for the student's name
+        self.name_entry = tk.Entry(master, font=("Helvetica", 14))
+        
+        # Create a label to display the recorded time
+        self.recorded_time_label = tk.Label(master, text="", font=("Helvetica", 14))
+        self.recorded_time_label.pack(pady=10)
+        
+        # Create a text widget to display all records
+        self.records_text = tk.Text(master, height=10, width=50, font=("Helvetica", 12))
+        self.records_text.pack(pady=20)
+        
+        # Call the update_timer method to start the clock
+        self.update_timer()
+
+    def toggle_timer(self):
+        if self.running:
+            # If the timer is running, stop it
+            self.running = False
+            self.start_stop_button.config(text="Start Timer")
+            self.record_time()
+        else:
+            # If the timer is stopped, start it
+            self.running = True
+            self.start_time = datetime.now()
+            self.start_stop_button.config(text="Stop and Record")
+            
+    def update_timer(self):
+        if self.running:
+            self.time_elapsed = datetime.now() - self.start_time
+            hours, remainder = divmod(self.time_elapsed.seconds, 3600)
+            minutes, seconds = divmod(remainder, 60)
+            
+            # Format the time as HH:MM:SS
+            time_str = f"{hours:02}:{minutes:02}:{seconds:02}"
+            self.timer_label.config(text=time_str)
+            
+        # Call this method again after 1000ms (1 second)
+        self.master.after(1000, self.update_timer)
+        
+    def record_time(self):
+        # Prompt for the student's name
+        name_prompt = tk.Toplevel(self.master)
+        name_prompt.title("Enter Name")
+        
+        tk.Label(name_prompt, text="Enter student's name:", font=("Helvetica", 12)).pack(pady=10)
+        
+        name_entry = tk.Entry(name_prompt, font=("Helvetica", 12))
+        name_entry.pack(pady=5)
+        name_entry.focus_set()
+        
+        def save_record():
+            student_name = name_entry.get()
+            if student_name:
+                # Format the time and create the record string
+                time_str = self.timer_label.cget("text")
+                record_str = f"Name: {student_name}, Time: {time_str}"
+                
+                # Insert the new record into the text widget
+                self.records_text.insert(tk.END, record_str + "\n")
+                
+                # Clear the name entry field
+                name_entry.delete(0, tk.END)
+                name_prompt.destroy()
+            
+        tk.Button(name_prompt, text="Save", command=save_record, font=("Helvetica", 12)).pack(pady=10)
+
+# Create the main window and run the application
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = TimerApp(root)
+    root.mainloop()
